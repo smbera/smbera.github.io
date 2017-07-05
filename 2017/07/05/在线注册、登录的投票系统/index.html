@@ -6,21 +6,31 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://smbera.github.io">
-  <title>解决连接mongodb出现Error failed to connect to [localhost 27017]的问题 | SmBeRa&#39;blog</title>
+  <title>在线注册、登录的投票系统 | SmBeRa&#39;blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1. 下载：上Mongodb官网，下载对应的Mongodb版本2、启动：为了更好的规划，我们启动之前可以选建立一个db文件(随便在哪建都行，我的建在e:\db)，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C:\Program Files\MongoDB\Server\3.4\bin，然后输入mongod –dbpath=E:\db，这">
-<meta name="keywords" content="Mongodb">
+  <meta name="description" content="使用Servlet、JSP、JavaBean、JDBC和CSS/JavaScript等技术开发一个小型投票网站源码请访问：github 第一部分网站功能设计1.前台功能要求 1.1注册功能 用户通过注册功能实现注册，系统将注册的信息保存到数据库中。 1.2登录功能 用户通过注册功能实现注册，系统将检查用户输入的登录信息是否在数据库中的用户信息库中，若不存在，提示需要注册，否则登录成功。 1.3显示">
+<meta name="keywords" content="Servlet,JSP,JavaBean,JDBC,JavaScript">
 <meta property="og:type" content="article">
-<meta property="og:title" content="解决连接mongodb出现Error failed to connect to [localhost 27017]的问题">
-<meta property="og:url" content="https://smbera.github.io/2017/07/04/解决连接mongodb出现Error failed to connect to [localhost 27017]的问题/index.html">
+<meta property="og:title" content="在线注册、登录的投票系统">
+<meta property="og:url" content="https://smbera.github.io/2017/07/05/在线注册、登录的投票系统/index.html">
 <meta property="og:site_name" content="SmBeRa&#39;blog">
-<meta property="og:description" content="1. 下载：上Mongodb官网，下载对应的Mongodb版本2、启动：为了更好的规划，我们启动之前可以选建立一个db文件(随便在哪建都行，我的建在e:\db)，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C:\Program Files\MongoDB\Server\3.4\bin，然后输入mongod –dbpath=E:\db，这">
-<meta property="og:image" content="https://smbera.github.io/assets/907594276376.png">
-<meta property="og:updated_time" content="2017-07-04T15:05:40.918Z">
+<meta property="og:description" content="使用Servlet、JSP、JavaBean、JDBC和CSS/JavaScript等技术开发一个小型投票网站源码请访问：github 第一部分网站功能设计1.前台功能要求 1.1注册功能 用户通过注册功能实现注册，系统将注册的信息保存到数据库中。 1.2登录功能 用户通过注册功能实现注册，系统将检查用户输入的登录信息是否在数据库中的用户信息库中，若不存在，提示需要注册，否则登录成功。 1.3显示">
+<meta property="og:image" content="https://smbera.github.io/assets/1.JPG">
+<meta property="og:image" content="https://smbera.github.io/assets/2.png">
+<meta property="og:image" content="https://smbera.github.io/assets/3.png">
+<meta property="og:image" content="https://smbera.github.io/assets/4.png">
+<meta property="og:image" content="https://smbera.github.io/assets/11.png">
+<meta property="og:image" content="https://smbera.github.io/assets/5.png">
+<meta property="og:image" content="https://smbera.github.io/assets/6.png">
+<meta property="og:image" content="https://smbera.github.io/assets/7.png">
+<meta property="og:image" content="https://smbera.github.io/assets/8.png">
+<meta property="og:image" content="https://smbera.github.io/assets/9.png">
+<meta property="og:image" content="https://smbera.github.io/assets/10.png">
+<meta property="og:updated_time" content="2017-07-05T01:12:20.197Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="解决连接mongodb出现Error failed to connect to [localhost 27017]的问题">
-<meta name="twitter:description" content="1. 下载：上Mongodb官网，下载对应的Mongodb版本2、启动：为了更好的规划，我们启动之前可以选建立一个db文件(随便在哪建都行，我的建在e:\db)，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C:\Program Files\MongoDB\Server\3.4\bin，然后输入mongod –dbpath=E:\db，这">
-<meta name="twitter:image" content="https://smbera.github.io/assets/907594276376.png">
+<meta name="twitter:title" content="在线注册、登录的投票系统">
+<meta name="twitter:description" content="使用Servlet、JSP、JavaBean、JDBC和CSS/JavaScript等技术开发一个小型投票网站源码请访问：github 第一部分网站功能设计1.前台功能要求 1.1注册功能 用户通过注册功能实现注册，系统将注册的信息保存到数据库中。 1.2登录功能 用户通过注册功能实现注册，系统将检查用户输入的登录信息是否在数据库中的用户信息库中，若不存在，提示需要注册，否则登录成功。 1.3显示">
+<meta name="twitter:image" content="https://smbera.github.io/assets/1.JPG">
   
     <link rel="alternative" href="/atom.xml" title="SmBeRa&#39;blog" type="application/atom+xml">
   
@@ -156,27 +166,89 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-解决连接mongodb出现Error failed to connect to [localhost 27017]的问题" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-在线注册、登录的投票系统" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      解决连接mongodb出现Error failed to connect to [localhost 27017]的问题
+      在线注册、登录的投票系统
     </h1>
   
 
         
-        <a href="/2017/07/04/解决连接mongodb出现Error failed to connect to [localhost 27017]的问题/" class="archive-article-date">
-  	<time datetime="2017-07-04T08:51:51.296Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-04</time>
+        <a href="/2017/07/05/在线注册、登录的投票系统/" class="archive-article-date">
+  	<time datetime="2017-07-05T00:47:42.546Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-05</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="1-下载：上Mongodb官网，下载对应的Mongodb版本"><a href="#1-下载：上Mongodb官网，下载对应的Mongodb版本" class="headerlink" title="1. 下载：上Mongodb官网，下载对应的Mongodb版本"></a>1. 下载：上<a href="http://www.mongodb.org/downloads" target="_blank" rel="external">Mongodb官网</a>，下载对应的Mongodb版本</h3><h3 id="2、启动：为了更好的规划，我们启动之前可以选建立一个db文件-随便在哪建都行，我的建在e-db-，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C-Program-Files-MongoDB-Server-3-4-bin，然后输入mongod-–dbpath-E-db，这时启动了，如下图所示："><a href="#2、启动：为了更好的规划，我们启动之前可以选建立一个db文件-随便在哪建都行，我的建在e-db-，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C-Program-Files-MongoDB-Server-3-4-bin，然后输入mongod-–dbpath-E-db，这时启动了，如下图所示：" class="headerlink" title="2、启动：为了更好的规划，我们启动之前可以选建立一个db文件(随便在哪建都行，我的建在e:\db)，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C:\Program Files\MongoDB\Server\3.4\bin，然后输入mongod –dbpath=E:\db，这时启动了，如下图所示："></a>2、启动：为了更好的规划，我们启动之前可以选建立一个db文件(随便在哪建都行，我的建在e:\db)，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C:\Program Files\MongoDB\Server\3.4\bin，然后输入mongod –dbpath=E:\db，这时启动了，如下图所示：</h3><p><img src="/assets/907594276376.png" alt="Mongodb-error"></p>
+        <p>使用Servlet、JSP、JavaBean、JDBC和CSS/JavaScript等技术开发一个小型投票网站<br>源码请访问：<a href="https://github.com/smbera/VoteWeb" target="_blank" rel="external">github</a></p>
+<h2 id="第一部分网站功能设计"><a href="#第一部分网站功能设计" class="headerlink" title="第一部分网站功能设计"></a>第一部分网站功能设计</h2><p>1.前台功能要求</p>
+<p>1.1注册功能</p>
+<p>用户通过注册功能实现注册，系统将注册的信息保存到数据库中。</p>
+<p>1.2登录功能</p>
+<p>用户通过注册功能实现注册，系统将检查用户输入的登录信息是否在数据库中的用户信息库中，若不存在，提示需要注册，否则登录成功。</p>
+<p>1.3显示投票主题功能</p>
+<p>在首页通过查询数据库显示所有的投票主题，截至时间。</p>
+<p>1.4投票的功能</p>
+<p>用户点击进入投票的链接，跳转到投票页面，显示投票的主题，截至时间，所有投票选项</p>
+<p>1.5查询投票的功能</p>
+<p>用户点击查询投票的链接，跳转到查询投票页面，显示投票的主题，截至时间，所有投票选项及票数。</p>
+<p>1.6搜索投票的功能</p>
+<p>用户输入搜索关键之后点击搜索按钮，跳转到搜索投票页面，显示相关投票的主题。</p>
+<p>2.后台功能要求</p>
+<p>2.1发起投票功能</p>
+<p>用户点击发起投票的链接，跳转到发起投票页面，用户输入投票的主题，单选或多选，截至时间，所有投票选项。系统将发起投票的信息保存到数据库中。</p>
+<p>2.2查看投票，每个登录用户可以查看自己发起的所有投票信息。</p>
+<p>在用户页面通过查询数据库显示所有的投票主题。</p>
+<p>2.3禁止投票</p>
+<p>将数据库中该投票的是否禁止投票设置为false</p>
+<p>2.4取消禁止投票</p>
+<p>将数据库中该投票的是否禁止投票设置为true</p>
+<p>3.投票结果的图形化显示</p>
+<p>通过javascript，以饼图显示每个选项的得票分比；以柱形图表示每个选项的得票数等。</p>
+<h2 id="第二部分网站页面设计"><a href="#第二部分网站页面设计" class="headerlink" title="第二部分网站页面设计"></a>第二部分网站页面设计</h2><p>首页：包含可以跳转到注册页面、登录页面、投票页面、查看投票页面的链接，以及搜索框</p>
+<p>注册页面：包含返回首页的链接及账号、用户名、密码输入框</p>
+<p>登录页面：包含返回首页的链接及账号、密码输入框</p>
+<p>搜索页面：包含返回首页的链接及搜索结果</p>
+<p>投票页面：包含投票主题、截止时间、投票选项</p>
+<p>查看投票结果页面：包含返回首页的链接、投票主题、截止时间、投票选项以及饼图</p>
+<p>用户页面：包含注销登陆、发起投票、进入投票的链接</p>
+<p>发起投票页面：包含投票主题、投票选项、截至时间的输入框及单选投票、多选投票单选框</p>
+<h2 id="第三部分数据库设计"><a href="#第三部分数据库设计" class="headerlink" title="第三部分数据库设计"></a>第三部分数据库设计</h2><p>User表：user_id varchar2(20) primary key</p>
+<p>user_name varchar2(20) not null</p>
+<p>user_password varchar2(20) not null</p>
+<p>Vote表：vote_name varchar(20) primary key</p>
+<p>vote_e1 varchar(20) not null</p>
+<p>vote_n1 int default 0</p>
+<p>vote_e2 varcher(20)</p>
+<p>vote_n2 int default 0</p>
+<p>vote_e3 varcher(20)</p>
+<p>vote_n3 int default 0</p>
+<p>vote_select varchar(20) default ‘single’</p>
+<p>vote_deadline Datetime not null</p>
+<p>vote_cancel varchar(20) default ‘true’</p>
+<p>UserVote表：uv_id int auto_increment primary key</p>
+<p>vote_name varchar(20) not null</p>
+<p>user_id varchar(20) not null)</p>
+<p>其中UserVote表中的vote_name来自Vote表的vote_name、user_idUser表的user_id</p>
+<h2 id="第四部分网站项目结构"><a href="#第四部分网站项目结构" class="headerlink" title="第四部分网站项目结构"></a>第四部分网站项目结构</h2><p>整个网站分为首页，注册页面，登录页面，搜索页面，发起投票页面，投票页面，查看投票页面，用户页面。<br><img src="/assets/1.JPG" alt="目录"></p>
+<h2 id="第五部分网站测试说明"><a href="#第五部分网站测试说明" class="headerlink" title="第五部分网站测试说明"></a>第五部分网站测试说明</h2><p><img src="/assets/2.png" alt=""><br>注册功能</p>
+<p><img src="/assets/3.png" alt=""><br>登录功能</p>
+<p><img src="/assets/4.png" alt=""><br>发起投票功能</p>
+<p><img src="/assets/11.png" alt=""><br>首页显示投票功能</p>
+<p><img src="/assets/5.png" alt=""><br>投票功能</p>
+<p><img src="/assets/6.png" alt=""><br>查看投票功能</p>
+<p><img src="/assets/7.png" alt=""><br>搜索功能</p>
+<p><img src="/assets/8.png" alt=""><br>用户页面显示投票功能</p>
+<p><img src="/assets/9.png" alt=""><br>截止投票功能</p>
+<p><img src="/assets/10.png" alt=""><br>取消禁止投票功能</p>
+<p><a href="https://github.com/smbera/VoteWeb" target="_blank" rel="external">github</a></p>
+<p>转载请说明来自(<a href="http://smbera.github.io/">http://smbera.github.io/</a>)</p>
 
       
 
@@ -221,7 +293,23 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Mongodb</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Servlet</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JSP</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JavaBean</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">JDBC</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
         		</li>
       		
 		</ul>
@@ -277,7 +365,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=https://smbera.github.io/2017/07/04/解决连接mongodb出现Error failed to connect to [localhost 27017]的问题/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=https://smbera.github.io/2017/07/05/在线注册、登录的投票系统/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -291,18 +379,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/07/04/Webpack 学习笔记/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Webpack 学习笔记
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/07/04/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Hello World</div>
+    <a href="/2017/07/04/Webpack 学习笔记/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Webpack 学习笔记</div>
       <i class="icon-circle-right"></i>
     </a>
   

@@ -6,21 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://smbera.github.io">
-  <title>解决连接mongodb出现Error failed to connect to [localhost 27017]的问题 | SmBeRa&#39;blog</title>
+  <title>Webpack 学习笔记 | SmBeRa&#39;blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1. 下载：上Mongodb官网，下载对应的Mongodb版本2、启动：为了更好的规划，我们启动之前可以选建立一个db文件(随便在哪建都行，我的建在e:\db)，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C:\Program Files\MongoDB\Server\3.4\bin，然后输入mongod –dbpath=E:\db，这">
-<meta name="keywords" content="Mongodb">
+  <meta name="description" content="之前简单学习过webpack，但由于没有做过多升入的理解，导致不久之后忘得一干二净。现在由于需要了解Vue-cli，所以再次学习一遍Webpack。此时的Webpack已是v3.0.0。 未完待添加">
+<meta name="keywords" content="Webpack">
 <meta property="og:type" content="article">
-<meta property="og:title" content="解决连接mongodb出现Error failed to connect to [localhost 27017]的问题">
-<meta property="og:url" content="https://smbera.github.io/2017/07/04/解决连接mongodb出现Error failed to connect to [localhost 27017]的问题/index.html">
+<meta property="og:title" content="Webpack 学习笔记">
+<meta property="og:url" content="https://smbera.github.io/2017/07/04/Webpack 学习笔记/index.html">
 <meta property="og:site_name" content="SmBeRa&#39;blog">
-<meta property="og:description" content="1. 下载：上Mongodb官网，下载对应的Mongodb版本2、启动：为了更好的规划，我们启动之前可以选建立一个db文件(随便在哪建都行，我的建在e:\db)，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C:\Program Files\MongoDB\Server\3.4\bin，然后输入mongod –dbpath=E:\db，这">
-<meta property="og:image" content="https://smbera.github.io/assets/907594276376.png">
-<meta property="og:updated_time" content="2017-07-04T15:05:40.918Z">
+<meta property="og:description" content="之前简单学习过webpack，但由于没有做过多升入的理解，导致不久之后忘得一干二净。现在由于需要了解Vue-cli，所以再次学习一遍Webpack。此时的Webpack已是v3.0.0。 未完待添加">
+<meta property="og:updated_time" content="2017-07-05T00:51:48.794Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="解决连接mongodb出现Error failed to connect to [localhost 27017]的问题">
-<meta name="twitter:description" content="1. 下载：上Mongodb官网，下载对应的Mongodb版本2、启动：为了更好的规划，我们启动之前可以选建立一个db文件(随便在哪建都行，我的建在e:\db)，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C:\Program Files\MongoDB\Server\3.4\bin，然后输入mongod –dbpath=E:\db，这">
-<meta name="twitter:image" content="https://smbera.github.io/assets/907594276376.png">
+<meta name="twitter:title" content="Webpack 学习笔记">
+<meta name="twitter:description" content="之前简单学习过webpack，但由于没有做过多升入的理解，导致不久之后忘得一干二净。现在由于需要了解Vue-cli，所以再次学习一遍Webpack。此时的Webpack已是v3.0.0。 未完待添加">
   
     <link rel="alternative" href="/atom.xml" title="SmBeRa&#39;blog" type="application/atom+xml">
   
@@ -156,27 +154,28 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-解决连接mongodb出现Error failed to connect to [localhost 27017]的问题" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Webpack 学习笔记" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      解决连接mongodb出现Error failed to connect to [localhost 27017]的问题
+      Webpack 学习笔记
     </h1>
   
 
         
-        <a href="/2017/07/04/解决连接mongodb出现Error failed to connect to [localhost 27017]的问题/" class="archive-article-date">
-  	<time datetime="2017-07-04T08:51:51.296Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-04</time>
+        <a href="/2017/07/04/Webpack 学习笔记/" class="archive-article-date">
+  	<time datetime="2017-07-04T09:21:29.529Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-04</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="1-下载：上Mongodb官网，下载对应的Mongodb版本"><a href="#1-下载：上Mongodb官网，下载对应的Mongodb版本" class="headerlink" title="1. 下载：上Mongodb官网，下载对应的Mongodb版本"></a>1. 下载：上<a href="http://www.mongodb.org/downloads" target="_blank" rel="external">Mongodb官网</a>，下载对应的Mongodb版本</h3><h3 id="2、启动：为了更好的规划，我们启动之前可以选建立一个db文件-随便在哪建都行，我的建在e-db-，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C-Program-Files-MongoDB-Server-3-4-bin，然后输入mongod-–dbpath-E-db，这时启动了，如下图所示："><a href="#2、启动：为了更好的规划，我们启动之前可以选建立一个db文件-随便在哪建都行，我的建在e-db-，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C-Program-Files-MongoDB-Server-3-4-bin，然后输入mongod-–dbpath-E-db，这时启动了，如下图所示：" class="headerlink" title="2、启动：为了更好的规划，我们启动之前可以选建立一个db文件(随便在哪建都行，我的建在e:\db)，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C:\Program Files\MongoDB\Server\3.4\bin，然后输入mongod –dbpath=E:\db，这时启动了，如下图所示："></a>2、启动：为了更好的规划，我们启动之前可以选建立一个db文件(随便在哪建都行，我的建在e:\db)，用来存放mongodb数据库。然后启动cmd，进入你下载的mongose解压的路径的bin文件，例如我的为C:\Program Files\MongoDB\Server\3.4\bin，然后输入mongod –dbpath=E:\db，这时启动了，如下图所示：</h3><p><img src="/assets/907594276376.png" alt="Mongodb-error"></p>
+        <p>之前简单学习过<a href="hhttps://doc.webpack-china.org/" target="_blank" rel="external">webpack</a>，但由于没有做过多升入的理解，导致不久之后忘得一干二净。现在由于需要了解<a href="https://loulanyijian.github.io/vue-cli-doc-Chinese/" target="_blank" rel="external">Vue-cli</a>，所以再次学习一遍Webpack。此时的Webpack已是v3.0.0。</p>
+<p>未完待添加</p>
 
       
 
@@ -221,7 +220,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Mongodb</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Webpack</a>
         		</li>
       		
 		</ul>
@@ -277,7 +276,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=https://smbera.github.io/2017/07/04/解决连接mongodb出现Error failed to connect to [localhost 27017]的问题/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=https://smbera.github.io/2017/07/04/Webpack 学习笔记/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -291,18 +290,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/07/04/Webpack 学习笔记/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2017/07/05/在线注册、登录的投票系统/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          Webpack 学习笔记
+          在线注册、登录的投票系统
         
       </div>
     </a>
   
   
-    <a href="/2017/07/04/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Hello World</div>
+    <a href="/2017/07/04/解决连接mongodb出现Error failed to connect to [localhost 27017]的问题/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">解决连接mongodb出现Error failed to connect to [localhost 27017]的问题</div>
       <i class="icon-circle-right"></i>
     </a>
   
