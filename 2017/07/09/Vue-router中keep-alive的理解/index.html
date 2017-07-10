@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://smbera.github.io/assets/6755512-9fed435de53190ea.png">
 <meta property="og:image" content="https://smbera.github.io/assets/6755512-89cf7f640aea2553.png">
 <meta property="og:image" content="https://smbera.github.io/assets/6755512-ed495fde74b3a3ae.png">
-<meta property="og:updated_time" content="2017-07-09T07:07:12.190Z">
+<meta property="og:updated_time" content="2017-07-10T08:01:33.618Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue-router中keep-alive的理解">
 <meta name="twitter:description" content="Vue-router的API文档中对于keep-alive的介绍并不多，所以对于初学者来说，可能并不太理解什么是keep-alive、作用是什么，什么时候用，怎么用？所以，通过这篇文章，我为大家详细讲解一下这四个问题。如有错误，还请大家指正，谢谢！ 1、什么是keep-alive keep-alive用来缓存组件,避免多次加载相应的组件,减少性能消耗，简单一点来说就是从页面1链接到其他页面后回退">
@@ -194,7 +194,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">routes: [</div><div class="line">    &#123; <span class="attr">path</span>: <span class="string">'/test1'</span>, <span class="attr">component</span>: test1, <span class="attr">meta</span>: &#123; <span class="attr">keepAlive</span>: <span class="literal">true</span> &#125;&#125;,</div><div class="line">    &#123; <span class="attr">path</span>: <span class="string">'/test2'</span>, <span class="attr">component</span>: test2, <span class="attr">meta</span>: &#123; <span class="attr">keepAlive</span>: <span class="literal">false</span> &#125;&#125; </div><div class="line">]</div></pre></td></tr></table></figure>
 <p>表示test1都使用keep-alive，test2不使用</p>
 <h3 id="2-、使用新增属性inlcude-exclude"><a href="#2-、使用新增属性inlcude-exclude" class="headerlink" title="(2)、使用新增属性inlcude/exclude"></a>(2)、使用新增属性inlcude/exclude</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;keep-alive exclude=&quot;test1&quot;&gt;</div><div class="line">    &lt;router-view&gt;&lt;/router-view&gt;</div><div class="line">&lt;/keep-alive&gt;</div></pre></td></tr></table></figure>
-<p>表示除了test1，其他都使用keep-alive</p>
+<p>同时必须在test1组件js部分添加name: ‘test1’<br>表示除了test1，其他都使用keep-alive</p>
 <p>其中，也可动态设置，如下代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;keep-alive :exclude=&quot;Components&quot;&gt;</div><div class="line">     &lt;router-view&gt;&lt;/router-view&gt;</div><div class="line">&lt;/keep-alive&gt;</div></pre></td></tr></table></figure></p>
 <h2 id="这个时候只要动态改变Components就可以设置哪个组件不使用keep-alive。"><a href="#这个时候只要动态改变Components就可以设置哪个组件不使用keep-alive。" class="headerlink" title="这个时候只要动态改变Components就可以设置哪个组件不使用keep-alive。"></a>这个时候只要动态改变Components就可以设置哪个组件不使用keep-alive。</h2><p>好了，关于keep-alive的介绍就到这里，真心希望此文章对你有帮助，如果此文章有错误，还请大家指正，谢谢！</p>
 <p>转载请说明来自(<a href="http://smbera.github.io/">http://smbera.github.io/</a>) ，谢谢。</p>
@@ -430,19 +430,19 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Vue</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Vue-router</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">keep-alive</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Webpack</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">标签1</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">标签2</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -466,15 +466,15 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vue</a>
+                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Vue-router</a>
+                <a href="javascript:void(0)" class="js-tag color4">标签1</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">keep-alive</a>
+                <a href="javascript:void(0)" class="js-tag color4">标签2</a>
               </li>
             
             <div class="clearfix"></div>
