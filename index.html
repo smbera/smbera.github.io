@@ -154,6 +154,72 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-圣杯布局和双飞翼布局" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/12/圣杯布局和双飞翼布局/">圣杯布局和双飞翼布局</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/12/圣杯布局和双飞翼布局/" class="archive-article-date">
+  	<time datetime="2017-07-12T13:22:15.415Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>圣杯布局和双飞翼布局实现的问题都是三列布局，两边定宽，中间自适应布局，要注意的是中间栏(重要的东西)要在放在文档流前面以优先渲染。<br>圣杯布局<br>1、首先定义三列，为它们设置简单的css样式，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 圣杯布局 --&gt;  </div><div class="line">&lt;!DOCTYPE html&gt;  </div><div class="line">&lt;html&gt;  </div><div class="line">&lt;head&gt;  </div><div class="line">&lt;style&gt;        </div><div class="line">       .left&#123;  </div><div class="line">            background: #E79F6D;  </div><div class="line">            width:150px;  </div><div class="line">            float:left;  </div><div class="line">        &#125;  </div><div class="line">        .main&#123;  </div><div class="line">            background: #D6D6D6;  </div><div class="line">            width:100%;  </div><div class="line">            float:left;   </div><div class="line">        &#125;  </div><div class="line">        .right&#123;  </div><div class="line">            background: #77BBDD;  </div><div class="line">            width:190px;  </div><div class="line">            float:left;  </div><div class="line">        &#125;  </div><div class="line">&lt;/style&gt;  </div><div class="line">&lt;/head&gt;  </div><div class="line">    &lt;body&gt;  </div><div class="line">    &lt;div class=&quot;con&quot;&gt;  </div><div class="line">            &lt;div class=&quot;main&quot;&gt;Main&lt;/div&gt;  </div><div class="line">        &lt;div class=&quot;left&quot;&gt;Left&lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;right&quot;&gt;Right&lt;/div&gt;  </div><div class="line">    &lt;/div&gt;  </div><div class="line">    &lt;/body&gt;  </div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure></p>
+<p>实现效果图：<br><img src="http://img.blog.csdn.net/20160609205549813?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="此处输入图片的描述"><br>这就是普通的让三个div左浮动显示出来的效果；</p>
+<p>2、我们让Left和Right与main在同一排，这里需要用到margin-left的负值，这里如果margin-left是负值，我理解的是在此基础上往左边移，设置Left的margin-left:-100%，也就是往左移main的整个宽度，这时Left的左边缘跟main的左边缘重叠，即Left的150px宽覆盖住了main的150px宽；<br><img src="http://img.blog.csdn.net/20160609211908525" alt="此处输入图片的描述"><br>这时Right跑到左边了，再对Right设置margin-left:-190px;即right也跑到上面去了，Right的右边缘和main的右边缘对齐，Right的宽度覆盖了main的右边的宽度；现在Left和Right都跑上面去了，但是需要注意的是main的值不见了，因为它被覆盖了，设置left和right的margin值只是改变Left和Right的位置，对于main来说还是在以前的位置上，接下来要考虑的问题就是如何定位main的位置？<br><img src="http://img.blog.csdn.net/20160609214354451" alt="此处输入图片的描述"><br>3、需要给con容器加padding值，padding值的作用是给这整个容器均移动padding值，如在刚开始Left和Right没上移的时候，给con加padding值的效果如下：<br><img src="http://img.blog.csdn.net/20160609210244144" alt="此处输入图片的描述"></p>
+<p>现在在Left和Right以及main都在同一排的情况下，加padding的值，就把main的定位到合适的位置了，但是这时的问题是：Left和Right也跟着一起缩了，所以要把Left和Right定位带之前的位置，该怎么定位呢？</p>
+<p>4、这时Left和Right需要用到css 的left属性了，left 属性规定元素的左边缘,该属性定义了定位元素左外边距边界与其包含块左边界之间的偏移。注意使用属性left的时候要给这个元素定位，绝对定位和相对定位都可以，如果不使用定位的话没有效果，具体为什么我也不知道，大家可以自行百度。<br>Left的css样式加上：position:relative;left：-150px;  同理css的right属性也是如此，position:relative;right:-190px;  Left和Right回到它们各自的位置上，OK，完成圣杯的布局，效果图贴上：<br><img src="http://img.blog.csdn.net/20160609223057976" alt="此处输入图片的描述"><br>完整代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 圣杯布局 --&gt;  </div><div class="line">&lt;!DOCTYPE html&gt;  </div><div class="line">&lt;html&gt;  </div><div class="line">&lt;head&gt;  </div><div class="line">&lt;style&gt;        </div><div class="line">        .con &#123;  </div><div class="line">            padding-left: 150px;  </div><div class="line">        padding-right: 190px;  </div><div class="line">        &#125;  </div><div class="line">        .left&#123;  </div><div class="line">            background: #E79F6D;  </div><div class="line">            width:150px;  </div><div class="line">            float:left;  </div><div class="line">            margin-left: -100%;  </div><div class="line">            position: relative;  </div><div class="line">            left:-150px;  </div><div class="line">        &#125;  </div><div class="line">        .main&#123;  </div><div class="line">            background: #D6D6D6;  </div><div class="line">            width:100%;  </div><div class="line">            float:left;   </div><div class="line">        &#125;  </div><div class="line">        .right&#123;  </div><div class="line">            background: #77BBDD;  </div><div class="line">            width:190px;  </div><div class="line">            float:left;  </div><div class="line">            margin-right: -190px;  </div><div class="line">            position: relative;  </div><div class="line">            right: -190px;  </div><div class="line">        &#125;  </div><div class="line">  </div><div class="line">&lt;/style&gt;  </div><div class="line">  </div><div class="line">&lt;/head&gt;  </div><div class="line">    &lt;body&gt;  </div><div class="line">    &lt;div class=&quot;con&quot;&gt;  </div><div class="line">            &lt;div class=&quot;main&quot;&gt;Main&lt;/div&gt;  </div><div class="line">        &lt;div class=&quot;left&quot;&gt;Left&lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;right&quot;&gt;Right&lt;/div&gt;  </div><div class="line">    &lt;/div&gt;  </div><div class="line">    &lt;/body&gt;  </div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure></p>
+<p>双飞翼布局<br>双飞翼布局可以看成是对圣杯布局的改进，因为圣杯布局用到的标签属性较多，用着也较麻烦，所以淘宝玉伯大大就提出来双飞翼的布局，双飞翼是把三列布局比作鸟，中间栏是鸟身，两边宽是鸟的两翼，重要的是鸟的身体摆好，再安两翼。思路和圣杯布局一样，这里我还是以上一个作例子，用到main，left，right（其实用main  sub  extra更形象）。前两步都是一样的，重要的是第三步，在前两步的完成后已经形成同行排列，只不过main值被覆盖了，圣杯布局的第三步是给con容器添加padding属性，而双飞翼布局是为main里面的内容再加一个div，让main的内容包含在内层div里，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&lt;body&gt;  </div><div class="line">    &lt;div class=&quot;con&quot;&gt;  </div><div class="line">             &lt;div class=&quot;main&quot;&gt;  </div><div class="line">                &lt;div class=&quot;mc&quot;&gt;Main&lt;/div&gt;  </div><div class="line">              &lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;left&quot;&gt;Left&lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;right&quot;&gt;Right&lt;/div&gt;  </div><div class="line">    &lt;/div&gt;  </div><div class="line">    &lt;/body&gt;</div></pre></td></tr></table></figure></p>
+<p>这时，只要设置mc的margin属性就可以实现三列布局了，而且main也正常显示；这里，不用设置con容器的padding属性，也不用给Left和Right运用left，right属性，因为设置padding属性就是为了不覆盖main的值，现在将main里的内容放在一个div里，再为它设置margin属性，也就实现了不遮挡main里面的内容值，因此双飞翼布局使用属性个数减少，看着更简便。代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 双飞翼布局 --&gt;  </div><div class="line">&lt;!DOCTYPE html&gt;  </div><div class="line">&lt;html&gt;  </div><div class="line">&lt;head&gt;  </div><div class="line">&lt;style&gt;        </div><div class="line">        .left&#123;  </div><div class="line">            background: #E79F6D;  </div><div class="line">            width:150px;  </div><div class="line">            float:left;  </div><div class="line">            margin-left: -100%;  </div><div class="line">        &#125;  </div><div class="line">        .main&#123;  </div><div class="line">            background: #D6D6D6;  </div><div class="line">            width:100%;  </div><div class="line">            float:left;   </div><div class="line">        &#125;  </div><div class="line">        .mc &#123;  </div><div class="line">            margin-left: 150px;  </div><div class="line">        &#125;  </div><div class="line">        .right&#123;  </div><div class="line">            background: #77BBDD;  </div><div class="line">            width:190px;  </div><div class="line">            float:left;  </div><div class="line">            margin-right: -190px;  </div><div class="line">        &#125;  </div><div class="line">  </div><div class="line">&lt;/style&gt;  </div><div class="line">  </div><div class="line">&lt;/head&gt;  </div><div class="line">    &lt;body&gt;  </div><div class="line">    &lt;div class=&quot;con&quot;&gt;  </div><div class="line">            &lt;div class=&quot;main&quot;&gt;  </div><div class="line">                &lt;div class=&quot;mc&quot;&gt;Main&lt;/div&gt;  </div><div class="line">            &lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;left&quot;&gt;Left&lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;right&quot;&gt;Right&lt;/div&gt;  </div><div class="line">    &lt;/div&gt;  </div><div class="line">    &lt;/body&gt;  </div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CSS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/12/圣杯布局和双飞翼布局/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-一劳永逸的搞定 flex 布局" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -734,7 +800,15 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Webpack</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vue</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Vue-router</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">keep-alive</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -746,19 +820,15 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
+                <a href="javascript:void(0)" class="js-tag color3">Webpack</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vue</a>
+                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Vue-router</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">keep-alive</a>
+                <a href="javascript:void(0)" class="js-tag color5">flex</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -782,11 +852,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">flex</a>
+                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
               </li>
             
             <div class="clearfix"></div>
