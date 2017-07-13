@@ -9,13 +9,13 @@
   <title>webpack四大核心概念 | SmBeRa&#39;blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="基本上每个项目都配置有一个 webpack.config.js ，它的作用如同常规的 gulpfile.js/Gruntfile.js ，就是一个配置项,上一节中提到一段代码123456789101112131415161718192021222324252627282930313233343536var webpack = require(&amp;apos;webpack&amp;apos;);var com">
-<meta name="keywords" content="Webpack,plugins,loaders,entry,ouput,四大核心概念">
+<meta name="keywords" content="Webpack,loaders,plugins,entry,ouput,四大核心概念">
 <meta property="og:type" content="article">
 <meta property="og:title" content="webpack四大核心概念">
 <meta property="og:url" content="https://smbera.github.io/2017/07/13/webpack四大核心概念/index.html">
 <meta property="og:site_name" content="SmBeRa&#39;blog">
 <meta property="og:description" content="基本上每个项目都配置有一个 webpack.config.js ，它的作用如同常规的 gulpfile.js/Gruntfile.js ，就是一个配置项,上一节中提到一段代码123456789101112131415161718192021222324252627282930313233343536var webpack = require(&amp;apos;webpack&amp;apos;);var com">
-<meta property="og:updated_time" content="2017-07-13T13:09:40.722Z">
+<meta property="og:updated_time" content="2017-07-13T14:04:52.477Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="webpack四大核心概念">
 <meta name="twitter:description" content="基本上每个项目都配置有一个 webpack.config.js ，它的作用如同常规的 gulpfile.js/Gruntfile.js ，就是一个配置项,上一节中提到一段代码123456789101112131415161718192021222324252627282930313233343536var webpack = require(&amp;apos;webpack&amp;apos;);var com">
@@ -202,6 +202,7 @@
 <h1 id="插件Plugins"><a href="#插件Plugins" class="headerlink" title="插件Plugins"></a>插件Plugins</h1><p>插件是 webpack 的支柱功能。在你使用 webpack 配置时，webpack 自身也构建于同样的插件系统上，插件目的在于解决 loader 无法实现的其他事。</p>
 <h2 id="用法："><a href="#用法：" class="headerlink" title="用法："></a>用法：</h2><p>由于 plugin 可以携带参数/选项，你必须在 wepback 配置中，向 plugins 属性传入 new 实例。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">var path = require(&quot;path&quot;); //webpack升级到2.0以后，路径需要引用这个模块</div><div class="line">var htmlWebpackPlugin = require(&apos;html-webpack-plugin&apos;); //采用CMD的方式引进html-webpack-plugin插件</div><div class="line">module.exports = &#123;</div><div class="line">	entry: &#123;</div><div class="line">		mian: &apos;./src/script/main.js&apos;,</div><div class="line">		test: &apos;./src/script/test.js&apos;</div><div class="line">	&#125;,</div><div class="line">	output: &#123;</div><div class="line">		path: path.resolve(__dirname, &apos;./dist/js&apos;),</div><div class="line">		filename: &apos;[name]-[hash].js&apos;    //区分文件有[name], [hash], [chunkhash]</div><div class="line">	&#125;,</div><div class="line">	plugins: [  //注意这里是数组的方式</div><div class="line">		new htmlWebpackPlugin()</div><div class="line">	]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>关于plugin的寻找，可以去npm官网上找你需要的插件，上面有配套的参数说明</p>
+<p>转载自（<a href="https://manlili.github.io/categories/webpack%E6%8A%80%E6%9C%AF/）" target="_blank" rel="external">https://manlili.github.io/categories/webpack%E6%8A%80%E6%9C%AF/）</a></p>
 
       
 
@@ -250,11 +251,11 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">plugins</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">loaders</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">loaders</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">plugins</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
@@ -463,7 +464,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">plugins</a>
+                <a href="javascript:void(0)" class="js-tag color3">loaders</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -479,7 +480,35 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">模板</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">图片</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">plugins</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">entry</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ouput</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">四大核心概念</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">CSS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">flex</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -503,27 +532,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">flex</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">BFC</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">loaders</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">entry</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">ouput</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">四大核心概念</a>
               </li>
              
               <li class="article-tag-list-item">
