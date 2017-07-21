@@ -154,6 +154,91 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-JS中的this对象详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/21/JS中的this对象详解/">JS中的this对象详解</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/21/JS中的this对象详解/" class="archive-article-date">
+  	<time datetime="2017-07-21T15:45:52.305Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> JS中this关键字很常见，但是它似乎变幻莫测，让人抓狂。这篇文章就来揭示其中的奥秘。</p>
+<pre><code>借助阮一峰老师的话：它代表函数运行时，自动生成的一个内部对象，只能在函数内部使用。这句话看似平常，可是要非常注意三个字：“运行时”，这说明this关键字只与函数的执行环境有关，而与声明环境没有关系。也就是这个this到底代表的是什么对象要等到函数运行时才知道，有点类似函数定义时的参数列表只在函数调用时才传入真正的对象。理解了这一点对后面this关键字规律的掌握有很大帮助。
+
+this关键字虽然会根据环境变化，但是它始终代表的是调用当前函数的那个对象。这就引出了JS中函数调用的问题。在JS中调用函数的模式可以分为4种： 方法调用模式、函数调用模式、构造器调用模式、apply调用模式。这些模式在如何初始化关键参数this上存在差异。
+</code></pre><p>一、方法调用模式</p>
+<pre><code>当函数被保存为一个对象的属性时，它就可称为这个对象的方法。当一个方法被调用时，this被绑定到这个对象上。如果调用表达式包含一个提取属性的动作（. 或 []），那么它被称为方法调用。例如：
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">var name = &quot;window&quot;;</div><div class="line">var obj = &#123;</div><div class="line">    name: &quot;kxy&quot;,</div><div class="line">    sayName: function() &#123;</div><div class="line">        console.log(this.name);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">obj.sayName();  //kxy</div></pre></td></tr></table></figure>
+<p>sayName函数作为对象obj的方法调用，所以函数体中的this就代表obj对象。</p>
+<p>二、函数调用模式</p>
+<p>当一个函数并非一个对象的属性时，那么它就是被当做函数来调用的。在此种模式下，this被绑定为全局对象，在浏览器环境下就是window对象。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var name = &quot;window&quot;;</div><div class="line">function sayName() &#123;</div><div class="line">    console.log(this.name);</div><div class="line">&#125;</div><div class="line">sayName();</div></pre></td></tr></table></figure></p>
+<pre><code>sayName以函数调用模式调用，所以函数体中的this代表window对象。
+</code></pre><p>三、构造函数模式</p>
+<pre><code>如果在一个函数前面加上new关键字来调用，那么就会创建一个连接到该函数的prototype成员的新对象，同时，this会被绑定到这个新对象上。这种情况下，这个函数就可以成为此对象的构造函数。例如：
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function Obj() &#123;</div><div class="line">    this.name = &quot;kxy&quot;;</div><div class="line">&#125;</div><div class="line">var person = new Obj();</div><div class="line">console.log(person.name);   //kxy</div></pre></td></tr></table></figure>
+<p>Obj作为构造函数被调用，函数体内的this被绑定为新创建的对象person。</p>
+<p>四、apply调用模式</p>
+<pre><code>在JS中，函数也是对象，所有函数对象都有两个方法：apply和call，这两个方法可以让我们构建一个参数数组传递给调用函数，也允许我们改变this的值。例如：
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">var name = &quot;window&quot;;</div><div class="line">var person = &#123;</div><div class="line">    name: &quot;kxy&quot;</div><div class="line">&#125;;</div><div class="line">function sayName() &#123;</div><div class="line">    console.log(this.name);</div><div class="line">&#125;</div><div class="line">sayName();    //window</div><div class="line">sayName.apply(person);   //kxy</div><div class="line">sayName.apply();    //window</div></pre></td></tr></table></figure>
+<pre><code>当以函数调用模式调用sayName时，this代表window；当用apply模式调用sayName，并给它传入的第一个参数为person时，this被绑定到person对象上。如果不给apply传入任何参数，则this代表window。
+
+ 自此，函数调用的4种模式就都介绍完了，this的绑定规律也就是以上几种，万变不离其宗。为了简单明了的介绍4种模式，以上的例子都比较简单，那么下面就跟我一起做一个稍复杂的练习，检验下自己是否真正掌握了this绑定对象的方法吧！
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">var name = &quot;window&quot;;</div><div class="line">function showName() &#123;</div><div class="line">    console.log(this.name);</div><div class="line">&#125;</div><div class="line">var person1 = &#123;</div><div class="line">    name: &quot;kxy&quot;,</div><div class="line">    sayName: showName</div><div class="line">&#125;</div><div class="line">var person2 = &#123;</div><div class="line">    name: &quot;Jake&quot;,</div><div class="line">    sayName: function() &#123;</div><div class="line">        var fun = person1.sayName;</div><div class="line">        fun();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">person1.sayName();    //kxy</div><div class="line">person2.sayName();    //window</div></pre></td></tr></table></figure>
+<pre><code>首先心中时刻提醒自己this是在函数执行时被绑定的，不要被任何赋值语句打乱阵脚。
+
+先看第一个执行语句：person1.sayName(); 首先确定这是方法调用模式，对象为person1，再看sayName被赋值为全局函数对象showName，在showName执行时，this绑定的是person1，所以结果为”kxy”。
+
+再看第二个执行语句：person2.sayName(); 这还是方法调用模式，对象为person2，调用的是它的sayName方法。再看sayName函数体，发现函数体最终执行的函数是fun，fun是用函数调用模式调用的。而fun最终也被赋值为showName函数，因为fun是用函数调用模式调用的，所以这里的this绑定为window，结果为”window“。
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/21/JS中的this对象详解/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-open()方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -440,15 +525,15 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Set</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Map</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
         		</li>
       		
 		</ul>
@@ -752,11 +837,11 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Symbol</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Symbol</a>
         		</li>
       		
 		</ul>
@@ -1089,71 +1174,6 @@ process.stdin.on(&apos;readable&apos;, function() {
 
 
   
-    <article id="post-Sass十分钟入门" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/14/Sass十分钟入门/">Sass十分钟入门</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/14/Sass十分钟入门/" class="archive-article-date">
-  	<time datetime="2017-07-14T05:27:48.417Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>sass中可以定义变量，方便统一修改和维护。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">//sass style</div><div class="line">//-----------------------------------</div><div class="line">$fontStack:    Helvetica, sans-serif;</div><div class="line">$primaryColor: #333;</div><div class="line"></div><div class="line">body &#123;</div><div class="line">  font-family: $fontStack;</div><div class="line">  color: $primaryColor;</div><div class="line">&#125;</div><div class="line">//css style</div><div class="line">//-----------------------------------</div><div class="line">body &#123;</div><div class="line">  font-family: Helvetica, sans-serif;</div><div class="line">  color: #333;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="嵌套"><a href="#嵌套" class="headerlink" title="嵌套"></a>嵌套</h2><p>sass可以进行选择器的嵌套，表示层级关系，看起来很优雅整齐。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">//sass style</div><div class="line">//-----------------------------------</div><div class="line">nav &#123;</div><div class="line">  ul &#123;</div><div class="line">    margin: 0;</div><div class="line">    padding: 0;</div><div class="line">    list-style: none;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  li &#123; display: inline-block; &#125;</div><div class="line"></div><div class="line">  a &#123;</div><div class="line">    display: block;</div><div class="line">    padding: 6px 12px;</div><div class="line">    text-decoration: none;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">//css style</div><div class="line">//-----------------------------------</div><div class="line">nav ul &#123;</div><div class="line">  margin: 0;</div><div class="line">  padding: 0;</div><div class="line">  list-style: none;</div><div class="line">&#125;</div><div class="line"></div><div class="line">nav li &#123;</div><div class="line">  display: inline-block;</div><div class="line">&#125;</div><div class="line"></div><div class="line">nav a &#123;</div><div class="line">  display: block;</div><div class="line">  padding: 6px 12px;</div><div class="line">  text-decoration: none;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="导入"><a href="#导入" class="headerlink" title="导入"></a>导入</h2><p>sass中如导入其他sass文件，最后编译为一个css文件，优于纯css的@import<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">//sass style</div><div class="line">//-----------------------------------</div><div class="line">// _reset.scss</div><div class="line"></div><div class="line">html,</div><div class="line">body,</div><div class="line">ul,</div><div class="line">ol &#123;</div><div class="line">   margin: 0;</div><div class="line">  padding: 0;</div><div class="line">&#125;</div><div class="line">//sass style</div><div class="line">//-----------------------------------</div><div class="line">// base.scss </div><div class="line"></div><div class="line">@import &apos;reset&apos;;</div><div class="line"></div><div class="line">body &#123;</div><div class="line">  font-size: 100% Helvetica, sans-serif;</div><div class="line">  background-color: #efefef;</div><div class="line">&#125;</div><div class="line">//css style</div><div class="line">//-----------------------------------</div><div class="line">html, body, ul, ol &#123;</div><div class="line">  margin: 0;</div><div class="line">  padding: 0;</div><div class="line">&#125;</div><div class="line"></div><div class="line">body &#123;</div><div class="line">  background-color: #efefef;</div><div class="line">  font-size: 100% Helvetica, sans-serif;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="mixin"><a href="#mixin" class="headerlink" title="mixin"></a>mixin</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">sass中可用mixin定义一些代码片段，且可传参数，方便日后根据需求调用。从此处理css3的前缀兼容轻松便捷。</div><div class="line">//sass style</div><div class="line">//-----------------------------------</div><div class="line">@mixin box-sizing ($sizing) &#123;</div><div class="line">    -webkit-box-sizing:$sizing;     </div><div class="line">       -moz-box-sizing:$sizing;</div><div class="line">            box-sizing:$sizing;</div><div class="line">&#125;</div><div class="line">.box-border&#123;</div><div class="line">    border:1px solid #ccc;</div><div class="line">    @include box-sizing(border-box);</div><div class="line">&#125;</div><div class="line">//css style</div><div class="line">//-----------------------------------</div><div class="line">.box-border &#123;</div><div class="line">  border: 1px solid #ccc;</div><div class="line">  -webkit-box-sizing: border-box;</div><div class="line">  -moz-box-sizing: border-box;</div><div class="line">  box-sizing: border-box;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="扩展-继承"><a href="#扩展-继承" class="headerlink" title="扩展/继承"></a>扩展/继承</h2><p>sass可通过@extend来实现代码组合声明，使代码更加优越简洁。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">//sass style</div><div class="line">//-----------------------------------</div><div class="line">.message &#123;</div><div class="line">  border: 1px solid #ccc;</div><div class="line">  padding: 10px;</div><div class="line">  color: #333;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.success &#123;</div><div class="line">  @extend .message;</div><div class="line">  border-color: green;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.error &#123;</div><div class="line">  @extend .message;</div><div class="line">  border-color: red;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.warning &#123;</div><div class="line">  @extend .message;</div><div class="line">  border-color: yellow;</div><div class="line">&#125;</div><div class="line">//css style</div><div class="line">//-----------------------------------</div><div class="line">.message, .success, .error, .warning &#123;</div><div class="line">  border: 1px solid #cccccc;</div><div class="line">  padding: 10px;</div><div class="line">  color: #333;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.success &#123;</div><div class="line">  border-color: green;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.error &#123;</div><div class="line">  border-color: red;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.warning &#123;</div><div class="line">  border-color: yellow;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="运算"><a href="#运算" class="headerlink" title="运算"></a>运算</h2><p>sass可进行简单的加减乘除运算等<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">//sass style</div><div class="line">//-----------------------------------</div><div class="line">.container &#123; width: 100%; &#125;</div><div class="line"></div><div class="line">article[role=&quot;main&quot;] &#123;</div><div class="line">  float: left;</div><div class="line">  width: 600px / 960px * 100%;</div><div class="line">&#125;</div><div class="line"></div><div class="line">aside[role=&quot;complimentary&quot;] &#123;</div><div class="line">  float: right;</div><div class="line">  width: 300px / 960px * 100%;</div><div class="line">&#125;</div><div class="line">//css style</div><div class="line">//-----------------------------------</div><div class="line">.container &#123;</div><div class="line">  width: 100%;</div><div class="line">&#125;</div><div class="line"></div><div class="line">article[role=&quot;main&quot;] &#123;</div><div class="line">  float: left;</div><div class="line">  width: 62.5%;</div><div class="line">&#125;</div><div class="line"></div><div class="line">aside[role=&quot;complimentary&quot;] &#123;</div><div class="line">  float: right;</div><div class="line">  width: 31.25%;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="颜色"><a href="#颜色" class="headerlink" title="颜色"></a>颜色</h2><p>sass中集成了大量的颜色函数，让变换颜色更加简单。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">//sass style</div><div class="line">//-----------------------------------</div><div class="line">$linkColor: #08c;</div><div class="line">a &#123;</div><div class="line">    text-decoration:none;</div><div class="line">    color:$linkColor;</div><div class="line">    &amp;:hover&#123;</div><div class="line">      color:darken($linkColor,10%);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">//css style</div><div class="line">//-----------------------------------</div><div class="line">a &#123;</div><div class="line">  text-decoration: none;</div><div class="line">  color: #0088cc;</div><div class="line">&#125;</div><div class="line">a:hover &#123;</div><div class="line">  color: #006699;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Sass</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/14/Sass十分钟入门/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1250,19 +1270,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ES6</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Symbol</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">JavaScript</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1271,6 +1279,18 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Map</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">JavaScript</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Symbol</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1302,6 +1322,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">WebSocket</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Webpack</a>
               </li>
              
@@ -1314,7 +1338,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">WebSocket</a>
+                <a href="javascript:void(0)" class="js-tag color3">plugins</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1323,10 +1347,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">图片</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">plugins</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1346,14 +1366,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">HTML</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">DTD</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Servlet</a>
               </li>
              
@@ -1370,11 +1382,19 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
+                <a href="javascript:void(0)" class="js-tag color5">HTML</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">DTD</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">BFC</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
               </li>
             
             <div class="clearfix"></div>

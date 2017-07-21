@@ -154,6 +154,92 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Vue-router中keep-alive的理解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/09/Vue-router中keep-alive的理解/">Vue-router中keep-alive的理解</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/09/Vue-router中keep-alive的理解/" class="archive-article-date">
+  	<time datetime="2017-07-09T06:51:15.040Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> Vue-router的API文档中对于keep-alive的介绍并不多，所以对于初学者来说，可能并不太理解什么是keep-alive、作用是什么，什么时候用，怎么用？所以，通过这篇文章，我为大家详细讲解一下这四个问题。如有错误，还请大家指正，谢谢！</p>
+<h1 id="1、什么是keep-alive"><a href="#1、什么是keep-alive" class="headerlink" title="1、什么是keep-alive"></a>1、什么是keep-alive</h1><p> keep-alive用来缓存组件,避免多次加载相应的组件,减少性能消耗，简单一点来说就是从页面1链接到其他页面后回退到页面1不用在重新执行页面1的代码，只会从缓存中加载之前已经缓存的页面1，这样可以减少加载时间及性能消耗，提高用户体验性。</p>
+<h1 id="2、keep-alive的作用是什么"><a href="#2、keep-alive的作用是什么" class="headerlink" title="2、keep-alive的作用是什么"></a>2、keep-alive的作用是什么</h1><p> 通过设置了keep-alive，可以简单理解为从页面1跳转到页面2后，然后后退到页面1，只会加载缓存中之前已经渲染好的页面1，而不会再次重新加载页面1，及不会再触发页面一种的created等类似的钩子函数，除非自己重新刷新该页面1。</p>
+<p>例如我的页面1有如下代码，该代码具体作用是每请求一次页面1，会获取一些数据追加到原来的数组里，然后再渲染该数组中的数据<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">created () &#123;</div><div class="line">      <span class="keyword">this</span>.$store.dispatch(<span class="string">'getComing_soon'</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="没使用keep-alive的清况："><a href="#没使用keep-alive的清况：" class="headerlink" title="没使用keep-alive的清况："></a>没使用keep-alive的清况：</h4><p>刚开始页面1只有2个数据，如图一，当链接到页面2后再回退到页面1是会出现图二的情况，因为回退到页面1后会重新触发上面的代码，追加了2个数据，所以才会出现图二4个数据的情况。当再次链接到页面2后再回退到页面1是会出现图三的情况<br><img src="/assets/6755512-9fed435de53190ea.png" alt="图一"><br>图一</p>
+<p><img src="/assets/6755512-89cf7f640aea2553.png" alt="图二"><br>图二</p>
+<p><img src="/assets/6755512-ed495fde74b3a3ae.png" alt="图三"><br>图三</p>
+<p>当使用了keep-alive后，无论从页面1链接到其他页面再回退到页面1多少次，页面1还是只有2个数据，因为并没有再次触发created钩子函数，只会从缓存中加载页面1，这就是keep-alive的作用之处。</p>
+<h1 id="3、什么时候用keep-alive"><a href="#3、什么时候用keep-alive" class="headerlink" title="3、什么时候用keep-alive"></a>3、什么时候用keep-alive</h1><p>如果需要频繁切换路由，这个时候就可以考虑用keep-alive了，来达到避免数据的重复请求的目的。</p>
+<h1 id="4、怎么用keep-alive"><a href="#4、怎么用keep-alive" class="headerlink" title="4、怎么用keep-alive"></a>4、怎么用keep-alive</h1><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">keep-alive</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">router-view</span>&gt;</span> <span class="tag">&lt;/<span class="name">router-view</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">keep-alive</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>将首次触发请求写在created钩子函数中,就能实现缓存,</p>
+<p>如果你需要缓存部分页面或者组件，可以使用如下方法：</p>
+<h3 id="1-、使用router-meta属性"><a href="#1-、使用router-meta属性" class="headerlink" title="(1)、使用router. meta属性"></a>(1)、使用router. meta属性</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;keep-alive&gt;</div><div class="line">    &lt;router-view v-if=&quot;$route.meta.keepAlive&quot;&gt;&lt;/router-view&gt;</div><div class="line">&lt;/keep-alive&gt;</div><div class="line"></div><div class="line">&lt;router-view v-if=&quot;!$route.meta.keepAlive&quot;&gt;&lt;/router-view&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">routes: [</div><div class="line">    &#123; <span class="attr">path</span>: <span class="string">'/test1'</span>, <span class="attr">component</span>: test1, <span class="attr">meta</span>: &#123; <span class="attr">keepAlive</span>: <span class="literal">true</span> &#125;&#125;,</div><div class="line">    &#123; <span class="attr">path</span>: <span class="string">'/test2'</span>, <span class="attr">component</span>: test2, <span class="attr">meta</span>: &#123; <span class="attr">keepAlive</span>: <span class="literal">false</span> &#125;&#125; </div><div class="line">]</div></pre></td></tr></table></figure>
+<p>表示test1都使用keep-alive，test2不使用</p>
+<h3 id="2-、使用新增属性inlcude-exclude"><a href="#2-、使用新增属性inlcude-exclude" class="headerlink" title="(2)、使用新增属性inlcude/exclude"></a>(2)、使用新增属性inlcude/exclude</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;keep-alive exclude=&quot;test1&quot;&gt;</div><div class="line">    &lt;router-view&gt;&lt;/router-view&gt;</div><div class="line">&lt;/keep-alive&gt;</div></pre></td></tr></table></figure>
+<p>同时必须在test1组件js部分添加name: ‘test1’<br>表示除了test1，其他都使用keep-alive</p>
+<p>其中，也可动态设置，如下代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;keep-alive :exclude=&quot;Components&quot;&gt;</div><div class="line">     &lt;router-view&gt;&lt;/router-view&gt;</div><div class="line">&lt;/keep-alive&gt;</div></pre></td></tr></table></figure></p>
+<h2 id="这个时候只要动态改变Components就可以设置哪个组件不使用keep-alive。"><a href="#这个时候只要动态改变Components就可以设置哪个组件不使用keep-alive。" class="headerlink" title="这个时候只要动态改变Components就可以设置哪个组件不使用keep-alive。"></a>这个时候只要动态改变Components就可以设置哪个组件不使用keep-alive。</h2><p>好了，关于keep-alive的介绍就到这里，真心希望此文章对你有帮助，如果此文章有错误，还请大家指正，谢谢！</p>
+<p>转载请说明来自(<a href="http://smbera.github.io/">http://smbera.github.io/</a>) ，谢谢。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vue</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Vue-router</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">keep-alive</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/09/Vue-router中keep-alive的理解/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-在线注册、登录的投票系统" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -540,19 +626,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ES6</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Symbol</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">JavaScript</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -561,6 +635,18 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Map</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">JavaScript</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Symbol</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -592,6 +678,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">WebSocket</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Webpack</a>
               </li>
              
@@ -604,7 +694,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">WebSocket</a>
+                <a href="javascript:void(0)" class="js-tag color3">plugins</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -613,10 +703,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">图片</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">plugins</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -636,14 +722,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">HTML</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">DTD</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Servlet</a>
               </li>
              
@@ -660,11 +738,19 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
+                <a href="javascript:void(0)" class="js-tag color5">HTML</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">DTD</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">BFC</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
               </li>
             
             <div class="clearfix"></div>
