@@ -8,17 +8,17 @@
   <link rel="dns-prefetch" href="https://smbera.github.io">
   <title>JavaScript中call和apply的区别 | SmBeRa&#39;blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1.作用在特定的作用域总调用函数，等于设置函数体内this对象的值，以扩充函数赖以运行的作用域。window.color=”red”;var o={color:”blue”};function getColor(){    console.log(this.color);}getColor.call(this);getColor.call(window);getColor.call(o);2.区别">
+  <meta name="description" content="1.作用在特定的作用域总调用函数，等于设置函数体内this对象的值，以扩充函数赖以运行的作用域。12345678window.color=&amp;quot;red&amp;quot;;var o=&amp;#123;color:&amp;quot;blue&amp;quot;&amp;#125;;function getColor()&amp;#123;    console.log(this.color);&amp;#125;getColor.call(t">
 <meta name="keywords" content="JavaScript">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JavaScript中call和apply的区别">
 <meta property="og:url" content="https://smbera.github.io/2017/07/21/JavaScript中call和apply的区别/index.html">
 <meta property="og:site_name" content="SmBeRa&#39;blog">
-<meta property="og:description" content="1.作用在特定的作用域总调用函数，等于设置函数体内this对象的值，以扩充函数赖以运行的作用域。window.color=”red”;var o={color:”blue”};function getColor(){    console.log(this.color);}getColor.call(this);getColor.call(window);getColor.call(o);2.区别">
-<meta property="og:updated_time" content="2017-07-21T14:37:01.587Z">
+<meta property="og:description" content="1.作用在特定的作用域总调用函数，等于设置函数体内this对象的值，以扩充函数赖以运行的作用域。12345678window.color=&amp;quot;red&amp;quot;;var o=&amp;#123;color:&amp;quot;blue&amp;quot;&amp;#125;;function getColor()&amp;#123;    console.log(this.color);&amp;#125;getColor.call(t">
+<meta property="og:updated_time" content="2017-07-21T14:39:28.861Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaScript中call和apply的区别">
-<meta name="twitter:description" content="1.作用在特定的作用域总调用函数，等于设置函数体内this对象的值，以扩充函数赖以运行的作用域。window.color=”red”;var o={color:”blue”};function getColor(){    console.log(this.color);}getColor.call(this);getColor.call(window);getColor.call(o);2.区别">
+<meta name="twitter:description" content="1.作用在特定的作用域总调用函数，等于设置函数体内this对象的值，以扩充函数赖以运行的作用域。12345678window.color=&amp;quot;red&amp;quot;;var o=&amp;#123;color:&amp;quot;blue&amp;quot;&amp;#125;;function getColor()&amp;#123;    console.log(this.color);&amp;#125;getColor.call(t">
   
     <link rel="alternative" href="/atom.xml" title="SmBeRa&#39;blog" type="application/atom+xml">
   
@@ -174,8 +174,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>1.作用<br>在特定的作用域总调用函数，等于设置函数体内this对象的值，以扩充函数赖以运行的作用域。<br>window.color=”red”;<br>var o={color:”blue”};<br>function getColor(){<br>    console.log(this.color);<br>}<br>getColor.call(this);<br>getColor.call(window);<br>getColor.call(o);<br>2.区别<br>接收参数的方式不同：<br>对于call（），第一个参数是运行函数的作用域，其余参数都直接传递给函数即传递给函数的参数必须逐个列举出来。<br>对于apply（），第一个参数是 运行函数的作用域 ，另一个参数是参数数组,可以是Array实例或arguments对象。<br>function sum(num1,num2){<br>return num1+num2;<br>}<br>function callSum(num1,num2){<br>return sum.call(this,num1,num2);<br>}<br>function callSum(num1,num2){<br>return sum.apply(this,arguments);<br>}<br>function callSum(num1,num2){<br>return sum.apply(this,[num1,num2]);<br>}</p>
-<p>function add(c, d){<br>return this.a + this.b + c + d;<br>}<br>var o = {a:1, b:3};<br>add.call(o, 5, 7); // 1 + 3 + 5 + 7 = 16<br>add.apply(o, [10, 20]); // 1 + 3 + 10 + 20 = 34 </p>
+        <p>1.作用<br>在特定的作用域总调用函数，等于设置函数体内this对象的值，以扩充函数赖以运行的作用域。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">window.color=&quot;red&quot;;</div><div class="line">var o=&#123;color:&quot;blue&quot;&#125;;</div><div class="line">function getColor()&#123;</div><div class="line">    console.log(this.color);</div><div class="line">&#125;</div><div class="line">getColor.call(this);</div><div class="line">getColor.call(window);</div><div class="line">getColor.call(o);</div></pre></td></tr></table></figure></p>
+<p>2.区别<br>接收参数的方式不同：<br>对于call（），第一个参数是运行函数的作用域，其余参数都直接传递给函数即传递给函数的参数必须逐个列举出来。<br>对于apply（），第一个参数是 运行函数的作用域 ，另一个参数是参数数组,可以是Array实例或arguments对象。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">function sum(num1,num2)&#123;</div><div class="line">return num1+num2;</div><div class="line">&#125;</div><div class="line">function callSum(num1,num2)&#123;</div><div class="line">return sum.call(this,num1,num2);</div><div class="line">&#125;</div><div class="line">function callSum(num1,num2)&#123;</div><div class="line">return sum.apply(this,arguments);</div><div class="line">&#125;</div><div class="line">function callSum(num1,num2)&#123;</div><div class="line">return sum.apply(this,[num1,num2]);</div><div class="line">&#125;</div><div class="line"></div><div class="line">function add(c, d)&#123; </div><div class="line">return this.a + this.b + c + d; </div><div class="line">&#125; </div><div class="line">var o = &#123;a:1, b:3&#125;; </div><div class="line">add.call(o, 5, 7); // 1 + 3 + 5 + 7 = 16 </div><div class="line">add.apply(o, [10, 20]); // 1 + 3 + 10 + 20 = 34</div></pre></td></tr></table></figure></p>
 
       
 
@@ -290,6 +290,15 @@
   
 <nav id="article-nav">
   
+    <a href="/2017/07/21/CSS Sprites/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          CSS Sprites
+        
+      </div>
+    </a>
+  
   
     <a href="/2017/07/21/文档类型/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">文档类型</div>
@@ -400,6 +409,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ES6</a>
               </li>
              
@@ -412,7 +425,11 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">变量的解构赋值</a>
+                <a href="javascript:void(0)" class="js-tag color4">Set</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Map</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -421,6 +438,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">const</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">变量的解构赋值</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -440,10 +461,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">WebSocket</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Webpack</a>
               </li>
              
@@ -456,15 +473,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Set</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Map</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">plugins</a>
+                <a href="javascript:void(0)" class="js-tag color5">WebSocket</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -473,6 +482,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">图片</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">plugins</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -488,11 +501,15 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
+                <a href="javascript:void(0)" class="js-tag color5">flex</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">flex</a>
+                <a href="javascript:void(0)" class="js-tag color5">HTML</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">DTD</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -512,19 +529,11 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">HTML</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">DTD</a>
+                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">BFC</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
               </li>
             
             <div class="clearfix"></div>
