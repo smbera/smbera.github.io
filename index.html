@@ -154,6 +154,254 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-[转载]在JavaScript中prototype和__proto__有什么区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/24/[转载]在JavaScript中prototype和__proto__有什么区别/">【转载】在JavaScript中prototype和__proto__有什么区别</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/24/[转载]在JavaScript中prototype和__proto__有什么区别/" class="archive-article-date">
+  	<time datetime="2017-07-24T01:06:54.285Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://www.cnblogs.com/erbingbing/p/6534342.html" title="Permalink to 在 JavaScript 中 prototype 和 __proto__ 有什么区别 - SmallW" target="_blank" rel="external">Source</a></p>
+<h1 id="在-JavaScript-中-prototype-和-proto-有什么区别-SmallW"><a href="#在-JavaScript-中-prototype-和-proto-有什么区别-SmallW" class="headerlink" title="在 JavaScript 中 prototype 和 proto 有什么区别 - SmallW"></a>在 JavaScript 中 prototype 和 <strong>proto</strong> 有什么区别 - SmallW</h1><p>本文主要讲三个 问题</p>
+<ol>
+<li>prototype 和 <strong>proto</strong></li>
+<li>function 和 object</li>
+<li>new 到底发生了什么</li>
+</ol>
+<h3 id="prototype-和-proto"><a href="#prototype-和-proto" class="headerlink" title="prototype 和 proto"></a>prototype 和 <strong>proto</strong></h3><pre><code>首先我们说下在 JS 中，常常让我们感到困惑的地方，就是 prototype 和 __proto__ 到底是干嘛的
+
+1. __proto__ 就是 Javascript中  所谓的原型 （这里，我们还是拿具体的例子来说明吧）
+
+
+    function A (name) {         // 这里是一个构造函数
+        thia.name = name
+    }
+
+    var Aobj = {                // 这里是一个 对对象字面量
+        name: &apos;&apos;
+    }
+
+    // 我们分别打印出来这二个对象看看
+    console.dir(A)
+
+    console.dir(Aobj)
+</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311125257467-187518383.png" alt=""></p>
+<pre><code>这里我们可以很明显的看到 
+构造函数的  __proto__ 属性 指向了 function()
+
+对象字面量的  __proto__ 属性 指向了 Object
+
+为什么 指向的 是不一样的呢？
+
+思考下:
+
+确实是 不一样的， 因为 构造函数本身也是一个 函数， 所以它 的原型 指向  function() 
+
+而对象字面量 是一个 对象， 那么他的 原型肯定是指向  Object
+
+扩展思考，如果 是一个数组 对象， 那么它的   __proto__  会指向什么呐？
+
+
+    const arr = [112,22,3333] 
+    console.dir(arr)
+</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311133751811-1547361806.png" alt=""></p>
+<pre><code>没错， 这里的  __proto__ 就指向了 Array[0]
+
+
+
+
+总结 ：一个对象的 __proto__ 属性和自己的内部属性[[Prototype]]指向一个相同的值 (通常称这个值为原型)
+
+tips：firefox、chrome等浏览器把对象内部属性 [[Prototype]] 用 __proto__ 的形式暴露了出来.(老版本的IE并不支持 __proto__ ,IE11中已经加上了 __proto__ 属性)
+
+
+2.  prototype : 看看上面的 截图，你会发现 只有 构造函数 中 有这个玩意儿，  对的。 prototype 确实 是 在 function 中特有的。 别的对象类型中 都不会有的属性。
+</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311135330029-880878106.png" alt=""></p>
+<pre><code>我们在看这个 function 对象属性的 时候就会发现这么一个 prototype 的属性，它的值是 一个 Object 。 点开这个 obj 我们就会发现啊， 这个 obj 的constructor 属性 指向了 这个构造函数本身。 是不是很神奇，至于为什么会是这样子的。
+
+留一个 思考题吧， 为什么在 javascript 中，函数对象的 prototype 属性的 constructor 指向是 函数本身？
+
+（在下面的介绍中，我们会 回答到这个问题）
+</code></pre><h3 id="function-和-object"><a href="#function-和-object" class="headerlink" title="function 和 object"></a>function 和 object</h3><pre><code>同样，我们来先看一个例子。
+
+
+    function B(name) {
+        this.name = name
+        this.getName = function() {
+            console.log(this.name)
+        }
+
+        var c = &apos;test&apos;
+        console.log(c)
+    }
+
+    var b = new B(&apos;testb&apos;)      // test
+    console.log(b)              // B: { name: &apos;testb&apos;,getName: function() {} }
+    B(&apos;testc&apos;)                  // test
+
+
+看到上面的 输出 是不是觉得又很诧异了。
+确实， 为什么 在 new 的时候， 构造函数居然 执行了一次。
+
+同样， 在非严格模式下， 我们直接执行 构造函数， B(&apos;testc&apos;) 相当于：
+
+
+    // window.name = &apos;testc&apos;
+    // window.getName = function() { console.log(this.name) }
+
+
+思考： 
+我们的函数B既可以直接执行,又可以new一下返回一个对象。function和object到底是什么关系,new的时候发生了什么?
+</code></pre><h3 id="new-到底发生了什么"><a href="#new-到底发生了什么" class="headerlink" title="new 到底发生了什么"></a>new 到底发生了什么</h3><pre><code>还是上面的 问题， 当我们执行 var b = new B(&apos;testb&apos;) 的时候发生了什么？
+
+MDN 上的介绍是这样的说的：
+
+对于 var b = new B(&apos;testb&apos;)
+
+
+//  javascript 实际上执行的是：
+
+var o = new Object()   // 生成一个 新的 对象  b 这里 可以约等于  var b = {}
+
+o.__proto__ = B.prototype // 这里就是 函数对象中 独有的 prototype 属性。
+
+                          // 这个独有的 prototype 属性 包含了一个 constructor 属性方法，指向的就是 构造函数， 也就是 这里的  function B(name) {}
+
+B.call(o)                 // tips :这里 就需要注意了，因为很多同学都搞不清楚 这里是什么意思。
+
+                          // 由于 call 的使用 将这里this是指向o, 所以就 可以 把什么this.name/getName 强行的绑定到o上。同时，需要注意的一点就是， 这里的 构造函数 执行科一遍， 只不过是 将 this 指向的 属性和方法，都 强行的 给 新创建的  这个 o 对象 绑定了一遍。
+
+var b = o                 // 把 这个 o 返回给了  b 。 从而完成了  var b = new B(&apos;testb&apos;) 的过程
+
+// 如果 还是不明白是 什么意思的话。 我们来看看  call 是干嘛用的 
+
+
+    // 关于 call 的使用说明 
+
+    var o1 = {
+        name: &apos;111&apos;,
+        getName: function() {
+            console.log(this.name)
+        }
+    }
+
+    var o2 = {
+        name: &apos;222&apos;
+    }
+
+    o1.getName.call(o2)  // 222
+
+
+所以 这个时候，我们反过头来 看看  这个 new 的对象都有哪些 属性 和方法。
+
+我们 可以 来 做一个 小实验，来 证明下，我们以上所说的东西。
+
+
+function A (name) {         // 这里是一个构造函数
+    this.name = name
+}
+
+var o = {}
+o.__proto__ = A.prototype
+A.call(o)
+var a = o
+
+var b = new A()
+
+console.log(a)
+console.log(b)
+</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311162654873-1613930357.png" alt=""></p>
+<pre><code>果然 和 我们想象 的一模一样。 
+
+至于 js 为什么要 把 新建 对象的 原型 指向 构造函数的 prototype 属性。
+
+我们可以这样来理解。 因为 通过 new 方法来创建的  obj 。肯定是需要 一个 标记 来找到自己的 构造器函数。
+所以 为了让 整个 程序结构看上去 合理。 我们需要   把 新建 对象的 原型 指向 构造函数的 prototype 属性。
+</code></pre><p>`<br>所以到最后，我们 总结一下 。</p>
+<p>在 javascript 中 prototype 和 <strong>proto</strong> 到底有什么区别。</p>
+<p>prototype 是 面向 构造函数，来思考，<br><strong>proto</strong> 是 面向 实例化 后 的对象 来思考就对了。</p>
+<p>`</p>
+<p><code>最后再 给一个例子， 是一个，我们经常会在开发中用到的 例子。</code></p>
+<pre><code>var Person = function(){}
+Person.prototype.sayName = function() {
+    alert(&apos;my name is xxx&apos;)
+}
+
+Person.prototype.age = 12
+
+var p = new Person()
+
+p.sayName()
+
+// 当我们 实例化 之后， 在我们 去执行 p.sayName() 的 时候，我们就会去 this 内部去 查找（这里就是 构造函数 Person 内部去找。 可是 没找到啊。只是一个 空函数， 怎么办呢？）
+
+// 这个时候 就会沿着 原型链向上追溯， 但是如何 追溯呢？
+
+// 这里就要用到 __proto__ 属性 来作为 追溯的 桥梁。
+
+// 因为 实例化对象的 __proto__ 属性 指向的就是 构造函数的  prototype 属性所对应的 对象啊
+</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311172017998-131500932.png" alt=""></p>
+<p>最后 终于 愉快的 找到了，自己的对象啦~ 单身狗就可能一直找不到，或者看不懂这篇文章。</p>
+<p>好了，以上就是 在 看 vuejs 源码 的时候 关于 new 的 一个 知识 扩展。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">prototype</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">__proto__</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/24/[转载]在JavaScript中prototype和__proto__有什么区别/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-Vue、Angular、React的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -814,111 +1062,6 @@ this关键字虽然会根据环境变化，但是它始终代表的是调用当�
 
 
   
-    <article id="post-ES6之let和const命令" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/15/ES6之let和const命令/">ES6之let和const命令</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/15/ES6之let和const命令/" class="archive-article-date">
-  	<time datetime="2017-07-15T01:44:59.415Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1-let-命令"><a href="#1-let-命令" class="headerlink" title="1.let 命令"></a>1.let 命令</h1><h3 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a><strong>基本用法</strong></h3><p>let所声明的变量，只在let命令所在的代码块内有效。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  let a = 10;</div><div class="line">  var b = 1;</div><div class="line">&#125;</div><div class="line"></div><div class="line">a // ReferenceError: a is not defined.</div><div class="line">b // 1</div></pre></td></tr></table></figure></p>
-<p>for循环的计数器，就很合适使用let命令。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">for (let i = 0; i &lt; 10; i++) &#123;</div><div class="line">  // ...</div><div class="line">&#125;</div><div class="line"></div><div class="line">console.log(i);</div><div class="line">// ReferenceError: i is not defined</div></pre></td></tr></table></figure></p>
-<p>下面的代码如果使用var，最后输出的是10。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">var a = [];</div><div class="line">for (var i = 0; i &lt; 10; i++) &#123;</div><div class="line">  a[i] = function () &#123;</div><div class="line">    console.log(i);</div><div class="line">  &#125;;</div><div class="line">&#125;</div><div class="line">a[6](); // 10</div></pre></td></tr></table></figure></p>
-<p>如果使用let，声明的变量仅在块级作用域内有效，最后输出的是6。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">var a = [];</div><div class="line">for (let i = 0; i &lt; 10; i++) &#123;</div><div class="line">  a[i] = function () &#123;</div><div class="line">    console.log(i);</div><div class="line">  &#125;;</div><div class="line">&#125;</div><div class="line">a[6](); // 6</div></pre></td></tr></table></figure></p>
-<p>另外，for循环还有一个特别之处，就是设置循环变量的那部分是一个父作用域，而循环体内部是一个单独的子作用域。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">for (let i = 0; i &lt; 3; i++) &#123;</div><div class="line">  let i = &apos;abc&apos;;</div><div class="line">  console.log(i);</div><div class="line">&#125;</div><div class="line">// abc</div><div class="line">// abc</div><div class="line">// abc</div></pre></td></tr></table></figure></p>
-<p>上面代码正确运行，输出了3次abc。这表明函数内部的变量i与循环变量i不在同一个作用域，有各自单独的作用域。</p>
-<h3 id="不存在变量提升"><a href="#不存在变量提升" class="headerlink" title="不存在变量提升"></a><strong>不存在变量提升</strong></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">// var 的情况</div><div class="line">console.log(foo); // 输出undefined</div><div class="line">var foo = 2;</div><div class="line"></div><div class="line">// let 的情况</div><div class="line">console.log(bar); // 报错ReferenceError</div><div class="line">let bar = 2;</div></pre></td></tr></table></figure>
-<h3 id="暂时性死区"><a href="#暂时性死区" class="headerlink" title="暂时性死区"></a><strong>暂时性死区</strong></h3><p>只要块级作用域内存在let命令，它所声明的变量就“绑定”（binding）这个区域，不再受外部的影响。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var tmp = 123;</div><div class="line"></div><div class="line">if (true) &#123;</div><div class="line">  tmp = &apos;abc&apos;; // ReferenceError</div><div class="line">  let tmp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>总之，在代码块内，使用let命令声明变量之前，该变量都是不可用的。这在语法上，称为“暂时性死区”（temporal dead zone，简称 TDZ）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">if (true) &#123;</div><div class="line">  // TDZ开始</div><div class="line">  tmp = &apos;abc&apos;; // ReferenceError</div><div class="line">  console.log(tmp); // ReferenceError</div><div class="line"></div><div class="line">  let tmp; // TDZ结束</div><div class="line">  console.log(tmp); // undefined</div><div class="line"></div><div class="line">  tmp = 123;</div><div class="line">  console.log(tmp); // 123</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>“暂时性死区”也意味着typeof不再是一个百分之百安全的操作。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">typeof x; // ReferenceError</div><div class="line">let x;</div></pre></td></tr></table></figure></p>
-<p>有些“死区”比较隐蔽，不太容易发现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function bar(x = y, y = 2) &#123;</div><div class="line">  return [x, y];</div><div class="line">&#125;</div><div class="line"></div><div class="line">bar(); // 报错</div></pre></td></tr></table></figure></p>
-<p>上面代码中，调用bar函数之所以报错（某些实现可能不报错），是因为参数x默认值等于另一个参数y，而此时y还没有声明，属于”死区“。如果y的默认值是x，就不会报错，因为此时x已经声明了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">function bar(x = 2, y = x) &#123;</div><div class="line">  return [x, y];</div><div class="line">&#125;</div><div class="line">bar(); // [2, 2]</div></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">// 不报错</div><div class="line">var x = x;</div><div class="line"></div><div class="line">// 报错</div><div class="line">let x = x;</div><div class="line">// ReferenceError: x is not defined</div></pre></td></tr></table></figure>
-<h3 id="不允许重复声明"><a href="#不允许重复声明" class="headerlink" title="不允许重复声明"></a><strong>不允许重复声明</strong></h3><p>let不允许在相同作用域内，重复声明同一个变量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// 报错</div><div class="line">function () &#123;</div><div class="line">  let a = 10;</div><div class="line">  var a = 1;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 报错</div><div class="line">function () &#123;</div><div class="line">  let a = 10;</div><div class="line">  let a = 1;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>因此，不能在函数内部重新声明参数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function func(arg) &#123;</div><div class="line">  let arg; // 报错</div><div class="line">&#125;</div><div class="line"></div><div class="line">function func(arg) &#123;</div><div class="line">  &#123;</div><div class="line">    let arg; // 不报错</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h1 id="2-块级作用域"><a href="#2-块级作用域" class="headerlink" title="2.块级作用域"></a>2.块级作用域</h1><h3 id="为什么需要块级作用域？"><a href="#为什么需要块级作用域？" class="headerlink" title="为什么需要块级作用域？"></a><strong>为什么需要块级作用域？</strong></h3><p>ES5 只有全局作用域和函数作用域，没有块级作用域，这带来很多不合理的场景。</p>
-<p>第一种场景，内层变量可能会覆盖外层变量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">var tmp = new Date();</div><div class="line"></div><div class="line">function f() &#123;</div><div class="line">  console.log(tmp);</div><div class="line">  if (false) &#123;</div><div class="line">    var tmp = &apos;hello world&apos;;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">f(); // undefined</div></pre></td></tr></table></figure></p>
-<p>第二种场景，用来计数的循环变量泄露为全局变量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">var s = &apos;hello&apos;;</div><div class="line"></div><div class="line">for (var i = 0; i &lt; s.length; i++) &#123;</div><div class="line">  console.log(s[i]);</div><div class="line">&#125;</div><div class="line"></div><div class="line">console.log(i); // 5</div></pre></td></tr></table></figure></p>
-<h3 id="ES6-的块级作用域"><a href="#ES6-的块级作用域" class="headerlink" title="ES6 的块级作用域"></a><strong>ES6 的块级作用域</strong></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">function f1() &#123;</div><div class="line">  let n = 5;</div><div class="line">  if (true) &#123;</div><div class="line">    let n = 10;</div><div class="line">  &#125;</div><div class="line">  console.log(n); // 5</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>外层作用域无法读取内层作用域的变量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;&#123;&#123;&#123;</div><div class="line">  &#123;let insane = &apos;Hello World&apos;&#125;</div><div class="line">  console.log(insane); // 报错</div><div class="line">&#125;&#125;&#125;&#125;;</div></pre></td></tr></table></figure></p>
-<p>内层作用域可以定义外层作用域的同名变量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;&#123;&#123;&#123;</div><div class="line">  let insane = &apos;Hello World&apos;;</div><div class="line">  &#123;let insane = &apos;Hello World&apos;&#125;</div><div class="line">&#125;&#125;&#125;&#125;;</div></pre></td></tr></table></figure></p>
-<p>块级作用域的出现，实际上使得获得广泛应用的立即执行函数表达式（IIFE）不再必要了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// IIFE 写法</div><div class="line">(function () &#123;</div><div class="line">  var tmp = ...;</div><div class="line">  ...</div><div class="line">&#125;());</div><div class="line"></div><div class="line">// 块级作用域写法</div><div class="line">&#123;</div><div class="line">  let tmp = ...;</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h3 id="块级作用域与函数声明"><a href="#块级作用域与函数声明" class="headerlink" title="块级作用域与函数声明"></a><strong>块级作用域与函数声明</strong></h3><p>ES6 引入了块级作用域，明确允许在块级作用域之中声明函数。ES6 规定，块级作用域之中，函数声明语句的行为类似于let，在块级作用域之外不可引用。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">function f() &#123; console.log(&apos;I am outside!&apos;); &#125;</div><div class="line"></div><div class="line">(function () &#123;</div><div class="line">  if (false) &#123;</div><div class="line">    // 重复声明一次函数f</div><div class="line">    function f() &#123; console.log(&apos;I am inside!&apos;); &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  f();</div><div class="line">&#125;());</div></pre></td></tr></table></figure></p>
-<p>上面代码在 ES5 中运行，会得到“I am inside!”，因为在if内声明的函数f会被提升到函数头部，实际运行的代码如下。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">// ES5 环境</div><div class="line">function f() &#123; console.log(&apos;I am outside!&apos;); &#125;</div><div class="line"></div><div class="line">(function () &#123;</div><div class="line">  function f() &#123; console.log(&apos;I am inside!&apos;); &#125;</div><div class="line">  if (false) &#123;</div><div class="line">  &#125;</div><div class="line">  f();</div><div class="line">&#125;());</div></pre></td></tr></table></figure></p>
-<p>上面的代码在符合 ES6 的浏览器中，都会报错，因为实际运行的是下面的代码。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// 浏览器的 ES6 环境</div><div class="line">function f() &#123; console.log(&apos;I am outside!&apos;); &#125;</div><div class="line">(function () &#123;</div><div class="line">  var f = undefined;</div><div class="line">  if (false) &#123;</div><div class="line">    function f() &#123; console.log(&apos;I am inside!&apos;); &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  f();</div><div class="line">&#125;());</div><div class="line">// Uncaught TypeError: f is not a function</div></pre></td></tr></table></figure></p>
-<p>考虑到环境导致的行为差异太大，应该避免在块级作用域内声明函数。如果确实需要，也应该写成函数表达式，而不是函数声明语句。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">// 函数声明语句</div><div class="line">&#123;</div><div class="line">  let a = &apos;secret&apos;;</div><div class="line">  function f() &#123;</div><div class="line">    return a;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 函数表达式</div><div class="line">&#123;</div><div class="line">  let a = &apos;secret&apos;;</div><div class="line">  let f = function () &#123;</div><div class="line">    return a;</div><div class="line">  &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>另外，还有一个需要注意的地方。ES6 的块级作用域允许声明函数的规则，只在使用大括号的情况下成立，如果没有使用大括号，就会报错。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">// 不报错</div><div class="line">&apos;use strict&apos;;</div><div class="line">if (true) &#123;</div><div class="line">  function f() &#123;&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 报错</div><div class="line">&apos;use strict&apos;;</div><div class="line">if (true)</div><div class="line">  function f() &#123;&#125;</div></pre></td></tr></table></figure></p>
-<h1 id="3-const-命令"><a href="#3-const-命令" class="headerlink" title="3.const 命令"></a>3.const 命令</h1><h3 id="基本用法-1"><a href="#基本用法-1" class="headerlink" title="基本用法"></a><strong>基本用法</strong></h3><p>const声明一个只读的常量。一旦声明，常量的值就不能改变。<br>const声明的变量不得改变值，这意味着，const一旦声明变量，就必须立即初始化，不能留到以后赋值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">const foo;</div><div class="line">// SyntaxError: Missing initializer in const declaration</div></pre></td></tr></table></figure></p>
-<p>const的作用域与let命令相同：只在声明所在的块级作用域内有效。</p>
-<p>const命令声明的常量也是不提升，同样存在暂时性死区，只能在声明的位置后面使用。</p>
-<p>const声明的常量，也与let一样不可重复声明。</p>
-<h3 id="本质"><a href="#本质" class="headerlink" title="本质"></a><strong>本质</strong></h3><p>const实际上保证的，并不是变量的值不得改动，而是变量指向的那个内存地址不得改动。对于简单类型的数据（数值、字符串、布尔值），值就保存在变量指向的那个内存地址，因此等同于常量。但对于复合类型的数据（主要是对象和数组），变量指向的内存地址，保存的只是一个指针，const只能保证这个指针是固定的，至于它指向的数据结构是不是可变的，就完全不能控制了。因此，将一个对象声明为常量必须非常小心。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">const foo = &#123;&#125;;</div><div class="line"></div><div class="line">// 为 foo 添加一个属性，可以成功</div><div class="line">foo.prop = 123;</div><div class="line">foo.prop // 123</div><div class="line"></div><div class="line">// 将 foo 指向另一个对象，就会报错</div><div class="line">foo = &#123;&#125;; // TypeError: &quot;foo&quot; is read-only</div></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">const a = [];</div><div class="line">a.push(&apos;Hello&apos;); // 可执行</div><div class="line">a.length = 0;    // 可执行</div><div class="line">a = [&apos;Dave&apos;];    // 报错</div></pre></td></tr></table></figure>
-<p>如果真的想将对象冻结，应该使用Object.freeze方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">const foo = Object.freeze(&#123;&#125;);</div><div class="line"></div><div class="line">// 常规模式时，下面一行不起作用；</div><div class="line">// 严格模式时，该行会报错</div><div class="line">foo.prop = 123;</div></pre></td></tr></table></figure></p>
-<h1 id="4-顶层对象的属性"><a href="#4-顶层对象的属性" class="headerlink" title="4.顶层对象的属性"></a>4.顶层对象的属性</h1><p>一方面规定，为了保持兼容性，var命令和function命令声明的全局变量，依旧是顶层对象的属性；另一方面规定，let命令、const命令、class命令声明的全局变量，不属于顶层对象的属性。也就是说，从ES6开始，全局变量将逐步与顶层对象的属性脱钩。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">var a = 1;</div><div class="line">// 如果在Node的REPL环境，可以写成global.a</div><div class="line">// 或者采用通用方法，写成this.a</div><div class="line">window.a // 1</div><div class="line"></div><div class="line">let b = 1;</div><div class="line">window.b // undefined</div></pre></td></tr></table></figure></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES6</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">let</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">const</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/15/ES6之let和const命令/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1160,6 +1303,14 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">prototype</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">__proto__</a>
               </li>
             
             <div class="clearfix"></div>

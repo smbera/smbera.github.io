@@ -6,17 +6,25 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://smbera.github.io">
-  <title>Tag: keep-alive | SmBeRa&#39;blog</title>
+  <title>【转载】在JavaScript中prototype和__proto__有什么区别 | SmBeRa&#39;blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Think More,Do Less">
-<meta property="og:type" content="website">
-<meta property="og:title" content="SmBeRa&#39;blog">
-<meta property="og:url" content="https://smbera.github.io/tags/keep-alive/index.html">
+  <meta name="description" content="Source 在 JavaScript 中 prototype 和 proto 有什么区别 - SmallW本文主要讲三个 问题  prototype 和 proto function 和 object new 到底发生了什么  prototype 和 proto首先我们说下在 JS 中，常常让我们感到困惑的地方，就是 prototype 和 __proto__ 到底是干嘛的  1. __prot">
+<meta name="keywords" content="JavaScript,prototype,__proto__">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【转载】在JavaScript中prototype和__proto__有什么区别">
+<meta property="og:url" content="https://smbera.github.io/2017/07/24/[转载]在JavaScript中prototype和__proto__有什么区别/index.html">
 <meta property="og:site_name" content="SmBeRa&#39;blog">
-<meta property="og:description" content="Think More,Do Less">
+<meta property="og:description" content="Source 在 JavaScript 中 prototype 和 proto 有什么区别 - SmallW本文主要讲三个 问题  prototype 和 proto function 和 object new 到底发生了什么  prototype 和 proto首先我们说下在 JS 中，常常让我们感到困惑的地方，就是 prototype 和 __proto__ 到底是干嘛的  1. __prot">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311125257467-187518383.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311133751811-1547361806.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311135330029-880878106.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311162654873-1613930357.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311172017998-131500932.png">
+<meta property="og:updated_time" content="2017-07-24T01:13:53.611Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SmBeRa&#39;blog">
-<meta name="twitter:description" content="Think More,Do Less">
+<meta name="twitter:title" content="【转载】在JavaScript中prototype和__proto__有什么区别">
+<meta name="twitter:description" content="Source 在 JavaScript 中 prototype 和 proto 有什么区别 - SmallW本文主要讲三个 问题  prototype 和 proto function 和 object new 到底发生了什么  prototype 和 proto首先我们说下在 JS 中，常常让我们感到困惑的地方，就是 prototype 和 __proto__ 到底是干嘛的  1. __prot">
+<meta name="twitter:image" content="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311125257467-187518383.png">
   
     <link rel="alternative" href="/atom.xml" title="SmBeRa&#39;blog" type="application/atom+xml">
   
@@ -152,68 +160,349 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-[转载]在JavaScript中prototype和__proto__有什么区别" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/07/09/Vue-router中keep-alive的理解/" class="archive-article-date">
-  	<time datetime="2017-07-09T06:51:15.040Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-09</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/07/09/Vue-router中keep-alive的理解/">Vue-router中keep-alive的理解</a>
+    <h1 class="article-title" itemprop="name">
+      【转载】在JavaScript中prototype和__proto__有什么区别
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2017/07/24/[转载]在JavaScript中prototype和__proto__有什么区别/" class="archive-article-date">
+  	<time datetime="2017-07-24T01:06:54.285Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://www.cnblogs.com/erbingbing/p/6534342.html" title="Permalink to 在 JavaScript 中 prototype 和 __proto__ 有什么区别 - SmallW" target="_blank" rel="external">Source</a></p>
+<h1 id="在-JavaScript-中-prototype-和-proto-有什么区别-SmallW"><a href="#在-JavaScript-中-prototype-和-proto-有什么区别-SmallW" class="headerlink" title="在 JavaScript 中 prototype 和 proto 有什么区别 - SmallW"></a>在 JavaScript 中 prototype 和 <strong>proto</strong> 有什么区别 - SmallW</h1><p>本文主要讲三个 问题</p>
+<ol>
+<li>prototype 和 <strong>proto</strong></li>
+<li>function 和 object</li>
+<li>new 到底发生了什么</li>
+</ol>
+<h3 id="prototype-和-proto"><a href="#prototype-和-proto" class="headerlink" title="prototype 和 proto"></a>prototype 和 <strong>proto</strong></h3><pre><code>首先我们说下在 JS 中，常常让我们感到困惑的地方，就是 prototype 和 __proto__ 到底是干嘛的
+
+1. __proto__ 就是 Javascript中  所谓的原型 （这里，我们还是拿具体的例子来说明吧）
+
+
+    function A (name) {         // 这里是一个构造函数
+        thia.name = name
+    }
+
+    var Aobj = {                // 这里是一个 对对象字面量
+        name: &apos;&apos;
+    }
+
+    // 我们分别打印出来这二个对象看看
+    console.dir(A)
+
+    console.dir(Aobj)
+</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311125257467-187518383.png" alt=""></p>
+<pre><code>这里我们可以很明显的看到 
+构造函数的  __proto__ 属性 指向了 function()
+
+对象字面量的  __proto__ 属性 指向了 Object
+
+为什么 指向的 是不一样的呢？
+
+思考下:
+
+确实是 不一样的， 因为 构造函数本身也是一个 函数， 所以它 的原型 指向  function() 
+
+而对象字面量 是一个 对象， 那么他的 原型肯定是指向  Object
+
+扩展思考，如果 是一个数组 对象， 那么它的   __proto__  会指向什么呐？
+
+
+    const arr = [112,22,3333] 
+    console.dir(arr)
+</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311133751811-1547361806.png" alt=""></p>
+<pre><code>没错， 这里的  __proto__ 就指向了 Array[0]
+
+
+
+
+总结 ：一个对象的 __proto__ 属性和自己的内部属性[[Prototype]]指向一个相同的值 (通常称这个值为原型)
+
+tips：firefox、chrome等浏览器把对象内部属性 [[Prototype]] 用 __proto__ 的形式暴露了出来.(老版本的IE并不支持 __proto__ ,IE11中已经加上了 __proto__ 属性)
+
+
+2.  prototype : 看看上面的 截图，你会发现 只有 构造函数 中 有这个玩意儿，  对的。 prototype 确实 是 在 function 中特有的。 别的对象类型中 都不会有的属性。
+</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311135330029-880878106.png" alt=""></p>
+<pre><code>我们在看这个 function 对象属性的 时候就会发现这么一个 prototype 的属性，它的值是 一个 Object 。 点开这个 obj 我们就会发现啊， 这个 obj 的constructor 属性 指向了 这个构造函数本身。 是不是很神奇，至于为什么会是这样子的。
+
+留一个 思考题吧， 为什么在 javascript 中，函数对象的 prototype 属性的 constructor 指向是 函数本身？
+
+（在下面的介绍中，我们会 回答到这个问题）
+</code></pre><h3 id="function-和-object"><a href="#function-和-object" class="headerlink" title="function 和 object"></a>function 和 object</h3><pre><code>同样，我们来先看一个例子。
+
+
+    function B(name) {
+        this.name = name
+        this.getName = function() {
+            console.log(this.name)
+        }
+
+        var c = &apos;test&apos;
+        console.log(c)
+    }
+
+    var b = new B(&apos;testb&apos;)      // test
+    console.log(b)              // B: { name: &apos;testb&apos;,getName: function() {} }
+    B(&apos;testc&apos;)                  // test
+
+
+看到上面的 输出 是不是觉得又很诧异了。
+确实， 为什么 在 new 的时候， 构造函数居然 执行了一次。
+
+同样， 在非严格模式下， 我们直接执行 构造函数， B(&apos;testc&apos;) 相当于：
+
+
+    // window.name = &apos;testc&apos;
+    // window.getName = function() { console.log(this.name) }
+
+
+思考： 
+我们的函数B既可以直接执行,又可以new一下返回一个对象。function和object到底是什么关系,new的时候发生了什么?
+</code></pre><h3 id="new-到底发生了什么"><a href="#new-到底发生了什么" class="headerlink" title="new 到底发生了什么"></a>new 到底发生了什么</h3><pre><code>还是上面的 问题， 当我们执行 var b = new B(&apos;testb&apos;) 的时候发生了什么？
+
+MDN 上的介绍是这样的说的：
+
+对于 var b = new B(&apos;testb&apos;)
+
+
+//  javascript 实际上执行的是：
+
+var o = new Object()   // 生成一个 新的 对象  b 这里 可以约等于  var b = {}
+
+o.__proto__ = B.prototype // 这里就是 函数对象中 独有的 prototype 属性。
+
+                          // 这个独有的 prototype 属性 包含了一个 constructor 属性方法，指向的就是 构造函数， 也就是 这里的  function B(name) {}
+
+B.call(o)                 // tips :这里 就需要注意了，因为很多同学都搞不清楚 这里是什么意思。
+
+                          // 由于 call 的使用 将这里this是指向o, 所以就 可以 把什么this.name/getName 强行的绑定到o上。同时，需要注意的一点就是， 这里的 构造函数 执行科一遍， 只不过是 将 this 指向的 属性和方法，都 强行的 给 新创建的  这个 o 对象 绑定了一遍。
+
+var b = o                 // 把 这个 o 返回给了  b 。 从而完成了  var b = new B(&apos;testb&apos;) 的过程
+
+// 如果 还是不明白是 什么意思的话。 我们来看看  call 是干嘛用的 
+
+
+    // 关于 call 的使用说明 
+
+    var o1 = {
+        name: &apos;111&apos;,
+        getName: function() {
+            console.log(this.name)
+        }
+    }
+
+    var o2 = {
+        name: &apos;222&apos;
+    }
+
+    o1.getName.call(o2)  // 222
+
+
+所以 这个时候，我们反过头来 看看  这个 new 的对象都有哪些 属性 和方法。
+
+我们 可以 来 做一个 小实验，来 证明下，我们以上所说的东西。
+
+
+function A (name) {         // 这里是一个构造函数
+    this.name = name
+}
+
+var o = {}
+o.__proto__ = A.prototype
+A.call(o)
+var a = o
+
+var b = new A()
+
+console.log(a)
+console.log(b)
+</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311162654873-1613930357.png" alt=""></p>
+<pre><code>果然 和 我们想象 的一模一样。 
+
+至于 js 为什么要 把 新建 对象的 原型 指向 构造函数的 prototype 属性。
+
+我们可以这样来理解。 因为 通过 new 方法来创建的  obj 。肯定是需要 一个 标记 来找到自己的 构造器函数。
+所以 为了让 整个 程序结构看上去 合理。 我们需要   把 新建 对象的 原型 指向 构造函数的 prototype 属性。
+</code></pre><p>`<br>所以到最后，我们 总结一下 。</p>
+<p>在 javascript 中 prototype 和 <strong>proto</strong> 到底有什么区别。</p>
+<p>prototype 是 面向 构造函数，来思考，<br><strong>proto</strong> 是 面向 实例化 后 的对象 来思考就对了。</p>
+<p>`</p>
+<p><code>最后再 给一个例子， 是一个，我们经常会在开发中用到的 例子。</code></p>
+<pre><code>var Person = function(){}
+Person.prototype.sayName = function() {
+    alert(&apos;my name is xxx&apos;)
+}
+
+Person.prototype.age = 12
+
+var p = new Person()
+
+p.sayName()
+
+// 当我们 实例化 之后， 在我们 去执行 p.sayName() 的 时候，我们就会去 this 内部去 查找（这里就是 构造函数 Person 内部去找。 可是 没找到啊。只是一个 空函数， 怎么办呢？）
+
+// 这个时候 就会沿着 原型链向上追溯， 但是如何 追溯呢？
+
+// 这里就要用到 __proto__ 属性 来作为 追溯的 桥梁。
+
+// 因为 实例化对象的 __proto__ 属性 指向的就是 构造函数的  prototype 属性所对应的 对象啊
+</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311172017998-131500932.png" alt=""></p>
+<p>最后 终于 愉快的 找到了，自己的对象啦~ 单身狗就可能一直找不到，或者看不懂这篇文章。</p>
+<p>好了，以上就是 在 看 vuejs 源码 的时候 关于 new 的 一个 知识 扩展。</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/alipay.JPG">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/weixinpay.JPG">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vue</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Vue-router</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">prototype</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">keep-alive</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">__proto__</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=https://smbera.github.io/2017/07/24/[转载]在JavaScript中prototype和__proto__有什么区别/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2017/07/23/Vue、Angular、React的区别/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Vue、Angular、React的区别</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
   
 
-    
+  
+
+  
 
 
           </div>
@@ -236,9 +525,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		root: "/",
