@@ -154,6 +154,401 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-ES6之Symbol" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/14/ES6之Symbol/">ES6之Symbol</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/14/ES6之Symbol/" class="archive-article-date">
+  	<time datetime="2017-07-14T15:31:47.740Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1.概述"></a>1.概述</h2><p>ES6 引入了一种新的原始数据类型Symbol，表示<strong>独一无二</strong>的值。它是 JavaScript 语言的第七种数据类型，前六种是：undefined、null、布尔值（Boolean）、字符串（String）、数值（Number）、对象（Object）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">let s = Symbol();</div><div class="line"></div><div class="line">typeof s</div><div class="line">// &quot;symbol&quot;</div></pre></td></tr></table></figure></p>
+<p>表明变量s是 Symbol 数据类型，而不是字符串之类的其他类型.<br>注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的 Symbol 是一个原始类型的值，不是对象。也就是说，由于 Symbol 值不是对象，所以不能添加属性。基本上，它是一种类似于字符串的数据类型。</p>
+<p>Symbol函数可以接受一个字符串作为参数，表示对 Symbol 实例的描述，主要是为了在控制台显示，或者转为字符串时，比较容易区分。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">var s1 = Symbol(&apos;foo&apos;);</div><div class="line">var s2 = Symbol(&apos;bar&apos;);</div><div class="line"></div><div class="line">s1 // Symbol(foo)</div><div class="line">s2 // Symbol(bar)</div><div class="line"></div><div class="line">s1.toString() // &quot;Symbol(foo)&quot;</div><div class="line">s2.toString() // &quot;Symbol(bar)&quot;</div></pre></td></tr></table></figure></p>
+<p>如果 Symbol 的参数是一个对象，就会调用该对象的toString方法，将其转为字符串，然后才生成一个 Symbol 值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">const obj = &#123;</div><div class="line">  toString() &#123;</div><div class="line">    return &apos;abc&apos;;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">const sym = Symbol(obj);</div><div class="line">sym // Symbol(abc)</div></pre></td></tr></table></figure></p>
+<p>注意，Symbol函数的参数只是表示对当前 Symbol 值的描述，因此相同参数的Symbol函数的返回值是不相等的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// 没有参数的情况</div><div class="line">var s1 = Symbol();</div><div class="line">var s2 = Symbol();</div><div class="line"></div><div class="line">s1 === s2 // false</div><div class="line"></div><div class="line">// 有参数的情况</div><div class="line">var s1 = Symbol(&apos;foo&apos;);</div><div class="line">var s2 = Symbol(&apos;foo&apos;);</div><div class="line"></div><div class="line">s1 === s2 // false</div></pre></td></tr></table></figure></p>
+<p>Symbol 值不能与其他类型的值进行运算，会报错。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var sym = Symbol(&apos;My symbol&apos;);</div><div class="line"></div><div class="line">&quot;your symbol is &quot; + sym</div><div class="line">// TypeError: can&apos;t convert symbol to string</div><div class="line">`your symbol is $&#123;sym&#125;`</div><div class="line">// TypeError: can&apos;t convert symbol to string</div></pre></td></tr></table></figure></p>
+<p>但是，Symbol 值可以显式转为字符串。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">var sym = Symbol(&apos;My symbol&apos;);</div><div class="line"></div><div class="line">String(sym) // &apos;Symbol(My symbol)&apos;</div><div class="line">sym.toString() // &apos;Symbol(My symbol)&apos;</div></pre></td></tr></table></figure></p>
+<p>另外，Symbol 值也可以转为布尔值，但是不能转为数值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">var sym = Symbol();</div><div class="line">Boolean(sym) // true</div><div class="line">!sym  // false</div><div class="line"></div><div class="line">if (sym) &#123;</div><div class="line">  // ...</div><div class="line">&#125;</div><div class="line"></div><div class="line">Number(sym) // TypeError</div><div class="line">sym + 2 // TypeError</div></pre></td></tr></table></figure></p>
+<h2 id="2-作为属性名的-Symbol"><a href="#2-作为属性名的-Symbol" class="headerlink" title="2.作为属性名的 Symbol"></a>2.作为属性名的 Symbol</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">var mySymbol = Symbol();</div><div class="line"></div><div class="line">// 第一种写法</div><div class="line">var a = &#123;&#125;;</div><div class="line">a[mySymbol] = &apos;Hello!&apos;;</div><div class="line"></div><div class="line">// 第二种写法</div><div class="line">var a = &#123;</div><div class="line">  [mySymbol]: &apos;Hello!&apos;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">// 第三种写法</div><div class="line">var a = &#123;&#125;;</div><div class="line">Object.defineProperty(a, mySymbol, &#123; value: &apos;Hello!&apos; &#125;);</div><div class="line"></div><div class="line">// 以上写法都得到同样结果</div><div class="line">a[mySymbol] // &quot;Hello!&quot;</div></pre></td></tr></table></figure>
+<p>注意，Symbol 值作为对象属性名时，不能用点运算符。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var mySymbol = Symbol();</div><div class="line">var a = &#123;&#125;;</div><div class="line"></div><div class="line">a.mySymbol = &apos;Hello!&apos;;</div><div class="line">a[mySymbol] // undefined</div><div class="line">a[&apos;mySymbol&apos;] // &quot;Hello!&quot;</div></pre></td></tr></table></figure></p>
+<p>同理，在对象的内部，使用 Symbol 值定义属性时，Symbol 值必须放在方括号之中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">let s = Symbol();</div><div class="line"></div><div class="line">let obj = &#123;</div><div class="line">  [s]: function (arg) &#123; ... &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">obj[s](123);</div></pre></td></tr></table></figure></p>
+<p>上面代码中，如果s不放在方括号中，该属性的键名就是字符串s，而不是s所代表的那个 Symbol 值。</p>
+<h2 id="3-属性名的遍历"><a href="#3-属性名的遍历" class="headerlink" title="3.属性名的遍历"></a>3.属性名的遍历</h2><p>Symbol 作为属性名，该属性不会出现在for…in、for…of循环中，也不会被Object.keys()、Object.getOwnPropertyNames()、JSON.stringify()返回。但是，它也不是私有属性，有一个<strong>Object.getOwnPropertySymbols</strong>方法，可以获取指定对象的所有 Symbol 属性名。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">var obj = &#123;&#125;;</div><div class="line">var a = Symbol(&apos;a&apos;);</div><div class="line">var b = Symbol(&apos;b&apos;);</div><div class="line"></div><div class="line">obj[a] = &apos;Hello&apos;;</div><div class="line">obj[b] = &apos;World&apos;;</div><div class="line"></div><div class="line">var objectSymbols = Object.getOwnPropertySymbols(obj);</div><div class="line"></div><div class="line">objectSymbols</div><div class="line">// [Symbol(a), Symbol(b)]</div></pre></td></tr></table></figure></p>
+<p>另一个新的API，<strong>Reflect.ownKeys</strong>方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">let obj = &#123;</div><div class="line">  [Symbol(&apos;my_key&apos;)]: 1,</div><div class="line">  enum: 2,</div><div class="line">  nonEnum: 3</div><div class="line">&#125;;</div><div class="line"></div><div class="line">Reflect.ownKeys(obj)</div><div class="line">//  [&quot;enum&quot;, &quot;nonEnum&quot;, Symbol(my_key)]</div></pre></td></tr></table></figure></p>
+<h2 id="4-Symbol-for-，Symbol-keyFor"><a href="#4-Symbol-for-，Symbol-keyFor" class="headerlink" title="4.Symbol.for()，Symbol.keyFor()"></a>4.Symbol.for()，Symbol.keyFor()</h2><p>有时，我们希望重新使用同一个Symbol值，Symbol.for方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的Symbol值。如果有，就返回这个Symbol值，否则就新建并返回一个以该字符串为名称的Symbol值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">var s1 = Symbol.for(&apos;foo&apos;);</div><div class="line">var s2 = Symbol.for(&apos;foo&apos;);</div><div class="line"></div><div class="line">s1 === s2 // true</div></pre></td></tr></table></figure></p>
+<p>Symbol.for()与Symbol()这两种写法，都会生成新的Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Symbol.for(&quot;bar&quot;) === Symbol.for(&quot;bar&quot;)</div><div class="line">// true</div><div class="line"></div><div class="line">Symbol(&quot;bar&quot;) === Symbol(&quot;bar&quot;)</div><div class="line">// false</div></pre></td></tr></table></figure></p>
+<p>上面代码中，由于Symbol()写法没有登记机制，所以每次调用都会返回一个不同的值。</p>
+<p>Symbol.keyFor方法返回一个已登记的 Symbol 类型值的key。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var s1 = Symbol.for(&quot;foo&quot;);</div><div class="line">Symbol.keyFor(s1) // &quot;foo&quot;</div><div class="line"></div><div class="line">var s2 = Symbol(&quot;foo&quot;);</div><div class="line">Symbol.keyFor(s2) // undefined</div></pre></td></tr></table></figure></p>
+<p>上面代码中，变量s2属于未登记的Symbol值，所以返回undefined。</p>
+<p>需要注意的是，Symbol.for为Symbol值登记的名字，是全局环境的，可以在不同的 iframe 或 service worker 中取到同一个值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">iframe = document.createElement(&apos;iframe&apos;);</div><div class="line">iframe.src = String(window.location);</div><div class="line">document.body.appendChild(iframe);</div><div class="line"></div><div class="line">iframe.contentWindow.Symbol.for(&apos;foo&apos;) === Symbol.for(&apos;foo&apos;)</div><div class="line">// true</div></pre></td></tr></table></figure></p>
+<p>上面代码中，iframe 窗口生成的 Symbol 值，可以在主页面得到。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES6</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Symbol</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/14/ES6之Symbol/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-WebSocket教程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/14/WebSocket教程/">WebSocket教程</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/14/WebSocket教程/" class="archive-article-date">
+  	<time datetime="2017-07-14T08:03:30.591Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>转载自（<a href="http://www.ruanyifeng.com/blog/2017/05/websocket.html）" target="_blank" rel="external">http://www.ruanyifeng.com/blog/2017/05/websocket.html）</a><br><a href="http://websocket.org/" target="_blank" rel="external">WebSocket</a> 是一种网络通信协议，很多高级功能都需要它。</p>
+<p>本文介绍 WebSocket 协议的使用方法。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017051501.png" alt=""></p>
+<h2 id="一、为什么需要-WebSocket？"><a href="#一、为什么需要-WebSocket？" class="headerlink" title="一、为什么需要 WebSocket？"></a>一、为什么需要 WebSocket？</h2><p>初次接触 WebSocket 的人，都会问同样的问题：我们已经有了 HTTP 协议，为什么还需要另一个协议？它能带来什么好处？</p>
+<p>答案很简单，因为 HTTP 协议有一个缺陷：通信只能由客户端发起。</p>
+<p>举例来说，我们想了解今天的天气，只能是客户端向服务器发出请求，服务器返回查询结果。HTTP 协议做不到服务器主动向客户端推送信息。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017051507.jpg" alt=""></p>
+<p>这种单向请求的特点，注定了如果服务器有连续的状态变化，客户端要获知就非常麻烦。我们只能使用<a href="https://www.pubnub.com/blog/2014-12-01-http-long-polling/" target="_blank" rel="external">“轮询”</a>：每隔一段时候，就发出一个询问，了解服务器有没有新的信息。最典型的场景就是聊天室。</p>
+<p>轮询的效率低，非常浪费资源（因为必须不停连接，或者 HTTP 连接始终打开）。因此，工程师们一直在思考，有没有更好的方法。WebSocket 就是这样发明的。</p>
+<h2 id="二、简介"><a href="#二、简介" class="headerlink" title="二、简介"></a>二、简介</h2><p>WebSocket 协议在2008年诞生，2011年成为国际标准。所有浏览器都已经支持了。</p>
+<p>它的最大特点就是，服务器可以主动向客户端推送信息，客户端也可以主动向服务器发送信息，是真正的双向平等对话，属于<a href="https://en.wikipedia.org/wiki/Push_technology" target="_blank" rel="external">服务器推送技术</a>的一种。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017051502.png" alt=""></p>
+<p>其他特点包括：</p>
+<p>（1）建立在 TCP 协议之上，服务器端的实现比较容易。</p>
+<p>（2）与 HTTP 协议有着良好的兼容性。默认端口也是80和443，并且握手阶段采用 HTTP 协议，因此握手时不容易屏蔽，能通过各种 HTTP 代理服务器。</p>
+<p>（3）数据格式比较轻量，性能开销小，通信高效。</p>
+<p>（4）可以发送文本，也可以发送二进制数据。</p>
+<p>（5）没有同源限制，客户端可以与任意服务器通信。</p>
+<p>（6）协议标识符是<code>ws</code>（如果加密，则为<code>wss</code>），服务器网址就是 URL。</p>
+<blockquote>
+<pre><code>ws://example.com:80/some/path
+</code></pre></blockquote>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017051503.jpg" alt=""></p>
+<h2 id="三、客户端的简单示例"><a href="#三、客户端的简单示例" class="headerlink" title="三、客户端的简单示例"></a>三、客户端的简单示例</h2><p>WebSocket 的用法相当简单。</p>
+<p>下面是一个网页脚本的例子（点击<a href="http://jsbin.com/muqamiqimu/edit?js,console" target="_blank" rel="external">这里</a>看运行结果），基本上一眼就能明白。</p>
+<blockquote>
+<pre><code>var ws = new WebSocket(&quot;wss://echo.websocket.org&quot;);
+
+ws.onopen = function(evt) { 
+  console.log(&quot;Connection open ...&quot;); 
+  ws.send(&quot;Hello WebSockets!&quot;);
+};
+
+ws.onmessage = function(evt) {
+  console.log( &quot;Received Message: &quot; + evt.data);
+  ws.close();
+};
+
+ws.onclose = function(evt) {
+  console.log(&quot;Connection closed.&quot;);
+};      
+</code></pre></blockquote>
+<h2 id="四、客户端的-API"><a href="#四、客户端的-API" class="headerlink" title="四、客户端的 API"></a>四、客户端的 API</h2><p>WebSocket 客户端的 API 如下。</p>
+<h3 id="4-1-WebSocket-构造函数"><a href="#4-1-WebSocket-构造函数" class="headerlink" title="4.1 WebSocket 构造函数"></a>4.1 WebSocket 构造函数</h3><p>WebSocket 对象作为一个构造函数，用于新建 WebSocket 实例。</p>
+<blockquote>
+<pre><code>var ws = new WebSocket(&apos;ws://localhost:8080&apos;);
+</code></pre></blockquote>
+<p>执行上面语句之后，客户端就会与服务器进行连接。</p>
+<p>实例对象的所有属性和方法清单，参见<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket" target="_blank" rel="external">这里</a>。</p>
+<h3 id="4-2-webSocket-readyState"><a href="#4-2-webSocket-readyState" class="headerlink" title="4.2 webSocket.readyState"></a>4.2 webSocket.readyState</h3><p><code>readyState</code>属性返回实例对象的当前状态，共有四种。</p>
+<blockquote>
+<ul>
+<li>CONNECTING：值为0，表示正在连接。</li>
+<li>OPEN：值为1，表示连接成功，可以通信了。</li>
+<li>CLOSING：值为2，表示连接正在关闭。</li>
+<li>CLOSED：值为3，表示连接已经关闭，或者打开连接失败。</li>
+</ul>
+</blockquote>
+<p>下面是一个示例。</p>
+<blockquote>
+<pre><code>switch (ws.readyState) {
+  case WebSocket.CONNECTING:
+    // do something
+    break;
+  case WebSocket.OPEN:
+    // do something
+    break;
+  case WebSocket.CLOSING:
+    // do something
+    break;
+  case WebSocket.CLOSED:
+    // do something
+    break;
+  default:
+    // this never happens
+    break;
+}
+</code></pre></blockquote>
+<h3 id="4-3-webSocket-onopen"><a href="#4-3-webSocket-onopen" class="headerlink" title="4.3 webSocket.onopen"></a>4.3 webSocket.onopen</h3><p>实例对象的<code>onopen</code>属性，用于指定连接成功后的回调函数。</p>
+<blockquote>
+<pre><code>ws.onopen = function () {
+  ws.send(&apos;Hello Server!&apos;);
+}
+</code></pre></blockquote>
+<p>如果要指定多个回调函数，可以使用<code>addEventListener</code>方法。</p>
+<blockquote>
+<pre><code>ws.addEventListener(&apos;open&apos;, function (event) {
+  ws.send(&apos;Hello Server!&apos;);
+});
+</code></pre></blockquote>
+<h3 id="4-4-webSocket-onclose"><a href="#4-4-webSocket-onclose" class="headerlink" title="4.4 webSocket.onclose"></a>4.4 webSocket.onclose</h3><p>实例对象的<code>onclose</code>属性，用于指定连接关闭后的回调函数。</p>
+<blockquote>
+<pre><code>ws.onclose = function(event) {
+  var code = event.code;
+  var reason = event.reason;
+  var wasClean = event.wasClean;
+  // handle close event
+};
+
+ws.addEventListener(&quot;close&quot;, function(event) {
+  var code = event.code;
+  var reason = event.reason;
+  var wasClean = event.wasClean;
+  // handle close event
+});
+</code></pre></blockquote>
+<h3 id="4-5-webSocket-onmessage"><a href="#4-5-webSocket-onmessage" class="headerlink" title="4.5 webSocket.onmessage"></a>4.5 webSocket.onmessage</h3><p>实例对象的<code>onmessage</code>属性，用于指定收到服务器数据后的回调函数。</p>
+<blockquote>
+<pre><code>ws.onmessage = function(event) {
+  var data = event.data;
+  // 处理数据
+};
+
+ws.addEventListener(&quot;message&quot;, function(event) {
+  var data = event.data;
+  // 处理数据
+});
+</code></pre></blockquote>
+<p>注意，服务器数据可能是文本，也可能是二进制数据（<code>blob</code>对象或<code>Arraybuffer</code>对象）。</p>
+<blockquote>
+<pre><code>ws.onmessage = function(event){
+  if(typeof event.data === String) {
+    console.log(&quot;Received data string&quot;);
+  }
+
+  if(event.data instanceof ArrayBuffer){
+    var buffer = event.data;
+    console.log(&quot;Received arraybuffer&quot;);
+  }
+}
+</code></pre></blockquote>
+<p>除了动态判断收到的数据类型，也可以使用<code>binaryType</code>属性，显式指定收到的二进制数据类型。</p>
+<blockquote>
+<pre><code>// 收到的是 blob 数据
+ws.binaryType = &quot;blob&quot;;
+ws.onmessage = function(e) {
+  console.log(e.data.size);
+};
+
+// 收到的是 ArrayBuffer 数据
+ws.binaryType = &quot;arraybuffer&quot;;
+ws.onmessage = function(e) {
+  console.log(e.data.byteLength);
+};
+</code></pre></blockquote>
+<h3 id="4-6-webSocket-send"><a href="#4-6-webSocket-send" class="headerlink" title="4.6 webSocket.send()"></a>4.6 webSocket.send()</h3><p>实例对象的<code>send()</code>方法用于向服务器发送数据。</p>
+<p>发送文本的例子。</p>
+<blockquote>
+<pre><code>ws.send(&apos;your message&apos;);
+</code></pre></blockquote>
+<p>发送 Blob 对象的例子。</p>
+<blockquote>
+<pre><code>var file = document
+  .querySelector(&apos;input[type=&quot;file&quot;]&apos;)
+  .files[0];
+ws.send(file);
+</code></pre></blockquote>
+<p>发送 ArrayBuffer 对象的例子。</p>
+<blockquote>
+<pre><code>// Sending canvas ImageData as ArrayBuffer
+var img = canvas_context.getImageData(0, 0, 400, 320);
+var binary = new Uint8Array(img.data.length);
+for (var i = 0; i 
+</code></pre></blockquote>
+<h3 id="4-7-webSocket-bufferedAmount"><a href="#4-7-webSocket-bufferedAmount" class="headerlink" title="4.7 webSocket.bufferedAmount"></a>4.7 webSocket.bufferedAmount</h3><p>实例对象的<code>bufferedAmount</code>属性，表示还有多少字节的二进制数据没有发送出去。它可以用来判断发送是否结束。</p>
+<blockquote>
+<pre><code>var data = new ArrayBuffer(10000000);
+socket.send(data);
+
+if (socket.bufferedAmount === 0) {
+  // 发送完毕
+} else {
+  // 发送还没结束
+}
+</code></pre></blockquote>
+<h3 id="4-8-webSocket-onerror"><a href="#4-8-webSocket-onerror" class="headerlink" title="4.8 webSocket.onerror"></a>4.8 webSocket.onerror</h3><p>实例对象的<code>onerror</code>属性，用于指定报错时的回调函数。</p>
+<blockquote>
+<pre><code>socket.onerror = function(event) {
+  // handle error event
+};
+
+socket.addEventListener(&quot;error&quot;, function(event) {
+  // handle error event
+});
+</code></pre></blockquote>
+<h2 id="五、服务端的实现"><a href="#五、服务端的实现" class="headerlink" title="五、服务端的实现"></a>五、服务端的实现</h2><p>WebSocket 服务器的实现，可以查看维基百科的<a href="https://en.wikipedia.org/wiki/Comparison_of_WebSocket_implementations" target="_blank" rel="external">列表</a>。</p>
+<p>常用的 Node 实现有以下三种。</p>
+<p>具体的用法请查看它们的文档，这里不详细介绍了。</p>
+<h2 id="六、WebSocketd"><a href="#六、WebSocketd" class="headerlink" title="六、WebSocketd"></a>六、WebSocketd</h2><p>下面，我要推荐一款非常特别的 WebSocket 服务器：<a href="http://websocketd.com" target="_blank" rel="external">Websocketd</a>。</p>
+<p>它的最大特点，就是后台脚本不限语言，标准输入（stdin）就是 WebSocket 的输入，标准输出（stdout）就是 WebSocket 的输出。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017051504.png" alt=""></p>
+<p>举例来说，下面是一个 Bash 脚本<code>counter.sh</code>。</p>
+<blockquote>
+<pre><code>#!/bin/bash
+
+echo 1
+sleep 1
+
+echo 2
+sleep 1
+
+echo 3
+</code></pre></blockquote>
+<p>命令行下运行这个脚本，会输出1、2、3，每个值之间间隔1秒。</p>
+<blockquote>
+<pre><code>$ bash ./counter.sh
+1
+2
+3
+</code></pre></blockquote>
+<p>现在，启动<code>websocketd</code>，指定这个脚本作为服务。</p>
+<blockquote>
+<pre><code>$ websocketd --port=8080 bash ./counter.sh
+</code></pre></blockquote>
+<p>上面的命令会启动一个 WebSocket 服务器，端口是<code>8080</code>。每当客户端连接这个服务器，就会执行<code>counter.sh</code>脚本，并将它的输出推送给客户端。</p>
+<blockquote>
+<pre><code>var ws = new WebSocket(&apos;ws://localhost:8080/&apos;);
+
+ws.onmessage = function(event) {
+  console.log(event.data);
+};
+</code></pre></blockquote>
+<p>上面是客户端的 JavaScript 代码，运行之后会在控制台依次输出1、2、3。</p>
+<p>有了它，就可以很方便地将命令行的输出，发给浏览器。</p>
+<blockquote>
+<pre><code>$ websocketd --port=8080 ls
+</code></pre></blockquote>
+<p>上面的命令会执行<code>ls</code>命令，从而将当前目录的内容，发给浏览器。使用这种方式实时监控服务器，简直是轻而易举（<a href="https://github.com/joewalnes/web-vmstats" target="_blank" rel="external">代码</a>）。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017051505.jpg" alt=""></p>
+<p>更多的用法可以参考<a href="https://github.com/joewalnes/websocketd/tree/master/examples/bash" target="_blank" rel="external">官方示例</a>。</p>
+<blockquote>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017051506.png" alt=""></p>
+</blockquote>
+<p>websocketd 的实质，就是命令行的 WebSocket 代理。只要命令行可以执行的程序，都可以通过它与浏览器进行 WebSocket 通信。下面是一个 Node 实现的回声服务<a href="https://github.com/joewalnes/websocketd/blob/master/examples/nodejs/greeter.js" target="_blank" rel="external"><code>greeter.js</code></a>。</p>
+<blockquote>
+<pre><code>process.stdin.setEncoding(&apos;utf8&apos;);
+
+process.stdin.on(&apos;readable&apos;, function() {
+  var chunk = process.stdin.read();
+  if (chunk !== null) {
+    process.stdout.write(&apos;data: &apos; + chunk);
+  }
+});
+</code></pre></blockquote>
+<p>启动这个脚本的命令如下。</p>
+<blockquote>
+<pre><code>$ websocketd --port=8080 node ./greeter.js
+</code></pre></blockquote>
+<p>官方仓库还有其他<a href="https://github.com/joewalnes/websocketd/tree/master/examples" target="_blank" rel="external">各种语言</a>的例子。</p>
+<h2 id="七、参考链接"><a href="#七、参考链接" class="headerlink" title="七、参考链接"></a>七、参考链接</h2><p>（完）</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">WebSocket</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/14/WebSocket教程/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-Sass十分钟入门" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -963,148 +1358,6 @@
 
 
   
-    <article id="post-圣杯布局和双飞翼布局" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/12/圣杯布局和双飞翼布局/">圣杯布局和双飞翼布局</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/12/圣杯布局和双飞翼布局/" class="archive-article-date">
-  	<time datetime="2017-07-12T13:22:15.415Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>圣杯布局和双飞翼布局实现的问题都是三列布局，两边定宽，中间自适应布局，要注意的是中间栏(重要的东西)要在放在文档流前面以优先渲染。<br>圣杯布局<br>1、首先定义三列，为它们设置简单的css样式，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 圣杯布局 --&gt;  </div><div class="line">&lt;!DOCTYPE html&gt;  </div><div class="line">&lt;html&gt;  </div><div class="line">&lt;head&gt;  </div><div class="line">&lt;style&gt;        </div><div class="line">       .left&#123;  </div><div class="line">            background: #E79F6D;  </div><div class="line">            width:150px;  </div><div class="line">            float:left;  </div><div class="line">        &#125;  </div><div class="line">        .main&#123;  </div><div class="line">            background: #D6D6D6;  </div><div class="line">            width:100%;  </div><div class="line">            float:left;   </div><div class="line">        &#125;  </div><div class="line">        .right&#123;  </div><div class="line">            background: #77BBDD;  </div><div class="line">            width:190px;  </div><div class="line">            float:left;  </div><div class="line">        &#125;  </div><div class="line">&lt;/style&gt;  </div><div class="line">&lt;/head&gt;  </div><div class="line">    &lt;body&gt;  </div><div class="line">    &lt;div class=&quot;con&quot;&gt;  </div><div class="line">            &lt;div class=&quot;main&quot;&gt;Main&lt;/div&gt;  </div><div class="line">        &lt;div class=&quot;left&quot;&gt;Left&lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;right&quot;&gt;Right&lt;/div&gt;  </div><div class="line">    &lt;/div&gt;  </div><div class="line">    &lt;/body&gt;  </div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure></p>
-<p>实现效果图：<br><img src="http://img.blog.csdn.net/20160609205549813?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="此处输入图片的描述"><br>这就是普通的让三个div左浮动显示出来的效果；</p>
-<p>2、我们让Left和Right与main在同一排，这里需要用到margin-left的负值，这里如果margin-left是负值，我理解的是在此基础上往左边移，设置Left的margin-left:-100%，也就是往左移main的整个宽度，这时Left的左边缘跟main的左边缘重叠，即Left的150px宽覆盖住了main的150px宽；<br><img src="http://img.blog.csdn.net/20160609211908525" alt="此处输入图片的描述"><br>这时Right跑到左边了，再对Right设置margin-left:-190px;即right也跑到上面去了，Right的右边缘和main的右边缘对齐，Right的宽度覆盖了main的右边的宽度；现在Left和Right都跑上面去了，但是需要注意的是main的值不见了，因为它被覆盖了，设置left和right的margin值只是改变Left和Right的位置，对于main来说还是在以前的位置上，接下来要考虑的问题就是如何定位main的位置？<br><img src="http://img.blog.csdn.net/20160609214354451" alt="此处输入图片的描述"><br>3、需要给con容器加padding值，padding值的作用是给这整个容器均移动padding值，如在刚开始Left和Right没上移的时候，给con加padding值的效果如下：<br><img src="http://img.blog.csdn.net/20160609210244144" alt="此处输入图片的描述"></p>
-<p>现在在Left和Right以及main都在同一排的情况下，加padding的值，就把main的定位到合适的位置了，但是这时的问题是：Left和Right也跟着一起缩了，所以要把Left和Right定位带之前的位置，该怎么定位呢？</p>
-<p>4、这时Left和Right需要用到css 的left属性了，left 属性规定元素的左边缘,该属性定义了定位元素左外边距边界与其包含块左边界之间的偏移。注意使用属性left的时候要给这个元素定位，绝对定位和相对定位都可以，如果不使用定位的话没有效果，具体为什么我也不知道，大家可以自行百度。<br>Left的css样式加上：position:relative;left：-150px;  同理css的right属性也是如此，position:relative;right:-190px;  Left和Right回到它们各自的位置上，OK，完成圣杯的布局，效果图贴上：<br><img src="http://img.blog.csdn.net/20160609223057976" alt="此处输入图片的描述"><br>完整代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 圣杯布局 --&gt;  </div><div class="line">&lt;!DOCTYPE html&gt;  </div><div class="line">&lt;html&gt;  </div><div class="line">&lt;head&gt;  </div><div class="line">&lt;style&gt;        </div><div class="line">        .con &#123;  </div><div class="line">            padding-left: 150px;  </div><div class="line">        padding-right: 190px;  </div><div class="line">        &#125;  </div><div class="line">        .left&#123;  </div><div class="line">            background: #E79F6D;  </div><div class="line">            width:150px;  </div><div class="line">            float:left;  </div><div class="line">            margin-left: -100%;  </div><div class="line">            position: relative;  </div><div class="line">            left:-150px;  </div><div class="line">        &#125;  </div><div class="line">        .main&#123;  </div><div class="line">            background: #D6D6D6;  </div><div class="line">            width:100%;  </div><div class="line">            float:left;   </div><div class="line">        &#125;  </div><div class="line">        .right&#123;  </div><div class="line">            background: #77BBDD;  </div><div class="line">            width:190px;  </div><div class="line">            float:left;  </div><div class="line">            margin-right: -190px;  </div><div class="line">            position: relative;  </div><div class="line">            right: -190px;  </div><div class="line">        &#125;  </div><div class="line">  </div><div class="line">&lt;/style&gt;  </div><div class="line">  </div><div class="line">&lt;/head&gt;  </div><div class="line">    &lt;body&gt;  </div><div class="line">    &lt;div class=&quot;con&quot;&gt;  </div><div class="line">            &lt;div class=&quot;main&quot;&gt;Main&lt;/div&gt;  </div><div class="line">        &lt;div class=&quot;left&quot;&gt;Left&lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;right&quot;&gt;Right&lt;/div&gt;  </div><div class="line">    &lt;/div&gt;  </div><div class="line">    &lt;/body&gt;  </div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure></p>
-<p>双飞翼布局<br>双飞翼布局可以看成是对圣杯布局的改进，因为圣杯布局用到的标签属性较多，用着也较麻烦，所以淘宝玉伯大大就提出来双飞翼的布局，双飞翼是把三列布局比作鸟，中间栏是鸟身，两边宽是鸟的两翼，重要的是鸟的身体摆好，再安两翼。思路和圣杯布局一样，这里我还是以上一个作例子，用到main，left，right（其实用main  sub  extra更形象）。前两步都是一样的，重要的是第三步，在前两步的完成后已经形成同行排列，只不过main值被覆盖了，圣杯布局的第三步是给con容器添加padding属性，而双飞翼布局是为main里面的内容再加一个div，让main的内容包含在内层div里，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&lt;body&gt;  </div><div class="line">    &lt;div class=&quot;con&quot;&gt;  </div><div class="line">             &lt;div class=&quot;main&quot;&gt;  </div><div class="line">                &lt;div class=&quot;mc&quot;&gt;Main&lt;/div&gt;  </div><div class="line">              &lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;left&quot;&gt;Left&lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;right&quot;&gt;Right&lt;/div&gt;  </div><div class="line">    &lt;/div&gt;  </div><div class="line">    &lt;/body&gt;</div></pre></td></tr></table></figure></p>
-<p>这时，只要设置mc的margin属性就可以实现三列布局了，而且main也正常显示；这里，不用设置con容器的padding属性，也不用给Left和Right运用left，right属性，因为设置padding属性就是为了不覆盖main的值，现在将main里的内容放在一个div里，再为它设置margin属性，也就实现了不遮挡main里面的内容值，因此双飞翼布局使用属性个数减少，看着更简便。代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 双飞翼布局 --&gt;  </div><div class="line">&lt;!DOCTYPE html&gt;  </div><div class="line">&lt;html&gt;  </div><div class="line">&lt;head&gt;  </div><div class="line">&lt;style&gt;        </div><div class="line">        .left&#123;  </div><div class="line">            background: #E79F6D;  </div><div class="line">            width:150px;  </div><div class="line">            float:left;  </div><div class="line">            margin-left: -100%;  </div><div class="line">        &#125;  </div><div class="line">        .main&#123;  </div><div class="line">            background: #D6D6D6;  </div><div class="line">            width:100%;  </div><div class="line">            float:left;   </div><div class="line">        &#125;  </div><div class="line">        .mc &#123;  </div><div class="line">            margin-left: 150px;  </div><div class="line">        &#125;  </div><div class="line">        .right&#123;  </div><div class="line">            background: #77BBDD;  </div><div class="line">            width:190px;  </div><div class="line">            float:left;  </div><div class="line">            margin-right: -190px;  </div><div class="line">        &#125;  </div><div class="line">  </div><div class="line">&lt;/style&gt;  </div><div class="line">  </div><div class="line">&lt;/head&gt;  </div><div class="line">    &lt;body&gt;  </div><div class="line">    &lt;div class=&quot;con&quot;&gt;  </div><div class="line">            &lt;div class=&quot;main&quot;&gt;  </div><div class="line">                &lt;div class=&quot;mc&quot;&gt;Main&lt;/div&gt;  </div><div class="line">            &lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;left&quot;&gt;Left&lt;/div&gt;  </div><div class="line">            &lt;div class=&quot;right&quot;&gt;Right&lt;/div&gt;  </div><div class="line">    &lt;/div&gt;  </div><div class="line">    &lt;/body&gt;  </div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CSS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/12/圣杯布局和双飞翼布局/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-一劳永逸的搞定 flex 布局" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/12/一劳永逸的搞定 flex 布局/">一劳永逸的搞定 flex 布局</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/12/一劳永逸的搞定 flex 布局/" class="archive-article-date">
-  	<time datetime="2017-07-12T12:49:22.681Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="寻根溯源话布局"><a href="#寻根溯源话布局" class="headerlink" title="寻根溯源话布局"></a>寻根溯源话布局</h2><p>一切都始于这样一个问题：怎样通过 CSS 简单而优雅的实现水平、垂直同时居中。记得刚开始学习 CSS 的时候，看到 float 属性不由得感觉眼前一亮，顺理成章的联想到 Word 文档排版中用到的的左对齐、右对齐和居中对齐，然而很快就失望的发现 CSS 中并不存在 float: center 的写法，那么 text-align: center、verticle-align: center 是否可行呢？答案也是否定的。这两个属性只能用于行内元素，对于块级元素的布局是无效的。<br>在网页布局没有进入 CSS 的时代，排版几乎是通过 table 元素实现的，在 table 的单元格里可以方便的使用 align、valign 来实现水平和垂直方向的对齐，随着 Web 语义化的流行，这些写法逐渐淡出了视野，CSS 标准为我们提供了 3 种布局方式：标准文档流、浮动布局和定位布局。这几种方式的搭配使用可以轻松搞定 PC 端页面的常见需求，比如实现水平居中可以使用margin: 0 auto，实现水平垂直同时居中可以如下设置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">.dad &#123;</div><div class="line">    position: relative;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">.son &#123;</div><div class="line">    position: absolute;</div><div class="line">    margin: auto;</div><div class="line">    top: 0;</div><div class="line">    right: 0;</div><div class="line">    bottom: 0;</div><div class="line">    left: 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">.dad &#123;</div><div class="line">    position: relative;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">.son &#123;</div><div class="line">    width: 100px;</div><div class="line">    height: 100px;</div><div class="line">    position: absolute;</div><div class="line">    top: 50%;</div><div class="line">    left: 50%;</div><div class="line">    margin-top: -50px;</div><div class="line">    margin-left: -50px;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>然而，这些写法都存在一些缺陷：缺少语义并且不够灵活。我们需要的是通过 1 个属性就能优雅的实现子元素居中或均匀分布，甚至可以随着窗口缩放自动适应。在这样的需求下，CSS 的第 4 种布局方式诞生了，这就是我们今天要重点介绍的 flex 布局。</p>
-<h2 id="flex-基本概念"><a href="#flex-基本概念" class="headerlink" title="flex 基本概念"></a>flex 基本概念</h2><p>使用 flex 布局首先要设置父容器 display: flex，然后再设置 justify-content: center 实现水平居中，最后设置 align-items: center 实现垂直居中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">#dad &#123;</div><div class="line">    display: flex;</div><div class="line">    justify-content: center;</div><div class="line">    align-items: center</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p><img src="https://dn-mhke0kuv.qbox.me/933e6f0857399ccf7e83.png" alt="此处输入图片的描述"><br>就是这么简单，大功告成。等等，好像哪里不对，justify-content 和 align-items 是啥？哪里可以看出横向、竖向的语义？是的，flex 的确没有那么简单，这就要从两个基本概念说起了。<br><img src="https://dn-mhke0kuv.qbox.me/221bb6de73e54f4104a1.png" alt="此处输入图片的描述"></p>
-<p>说来也不难，flex 的核心的概念就是 容器 和 轴。容器包括外层的 父容器 和内层的 子容器，轴包括 主轴 和 交叉轴，可以说 flex 布局的全部特性都构建在这两个概念上。flex 布局涉及到 12 个 CSS 属性（不含 display: flex），其中父容器、子容器各 6 个。不过常用的属性只有 4 个，父容器、子容器各 2 个，我们就先从常用的说起吧。</p>
-<h3 id="1-容器"><a href="#1-容器" class="headerlink" title="1. 容器"></a>1. 容器</h3><p>容器具有这样的特点：父容器可以统一设置子容器的排列方式，子容器也可以单独设置自身的排列方式，如果两者同时设置，以子容器的设置为准。<br><img src="https://dn-mhke0kuv.qbox.me/f443b657dbc39d361f68.png" alt="此处输入图片的描述"><br>1.1 父容器<br>设置子容器沿主轴排列：justify-content<br>justify-content 属性用于定义如何沿着主轴方向排列子容器。<br><img src="https://dn-mhke0kuv.qbox.me/be5b7f0e022a8da60ed8.png" alt="此处输入图片的描述"><br>flex-start：起始端对齐<br><img src="https://dn-mhke0kuv.qbox.me/ac1d8c5e7b4a2ba51ca7.png" alt="此处输入图片的描述"><br>flex-end：末尾段对齐<br><img src="https://dn-mhke0kuv.qbox.me/9ec9245881c2882a35a6.png" alt="此处输入图片的描述"><br>center：居中对齐<br><img src="https://dn-mhke0kuv.qbox.me/476461f1b9604a985046.png" alt="此处输入图片的描述"><br>space-around：子容器沿主轴均匀分布，位于首尾两端的子容器到父容器的距离是子容器间距的一半。<br><img src="https://dn-mhke0kuv.qbox.me/63119c88aa64853107a9.png" alt="此处输入图片的描述"><br>space-between：子容器沿主轴均匀分布，位于首尾两端的子容器与父容器相切。<br><img src="https://dn-mhke0kuv.qbox.me/495f46fc9c5c0c6d1e65.png" alt="此处输入图片的描述"><br>设置子容器如何沿交叉轴排列：align-items<br>align-items 属性用于定义如何沿着交叉轴方向分配子容器的间距。<br><img src="https://dn-mhke0kuv.qbox.me/e7e6aa079f5333828c58.png" alt="此处输入图片的描述"><br>flex-start：起始端对齐<br><img src="https://dn-mhke0kuv.qbox.me/56622862c7831a4d61be.png" alt="此处输入图片的描述"><br>flex-end：末尾段对齐<br><img src="https://dn-mhke0kuv.qbox.me/33519955a141be1e713a.png" alt="此处输入图片的描述"><br>center：居中对齐<br><img src="https://dn-mhke0kuv.qbox.me/f10513a47130d52f2aa8.png" alt="此处输入图片的描述"><br>baseline：基线对齐，这里的 baseline 默认是指首行文字，即 first baseline，所有子容器向基线对齐，交叉轴起点到元素基线距离最大的子容器将会与交叉轴起始端相切以确定基线。<br><img src="https://dn-mhke0kuv.qbox.me/f78e9f42be9a3f165f8f.png" alt="此处输入图片的描述"><br>stretch：子容器沿交叉轴方向的尺寸拉伸至与父容器一致。<br><img src="https://dn-mhke0kuv.qbox.me/160170b3d2022800ffea.png" alt="此处输入图片的描述"></p>
-<h3 id="1-2-子容器"><a href="#1-2-子容器" class="headerlink" title="1.2 子容器"></a>1.2 子容器</h3><p>在主轴上如何伸缩：flex<br><img src="https://dn-mhke0kuv.qbox.me/089d48122453e9fc372c.png" alt="此处输入图片的描述"><br>子容器是有弹性的（flex 即弹性），它们会自动填充剩余空间，子容器的伸缩比例由 flex 属性确定。<br>flex 的值可以是无单位数字（如：1, 2, 3），也可以是有单位数字（如：15px，30px，60px），还可以是 none 关键字。子容器会按照 flex 定义的尺寸比例自动伸缩，如果取值为none 则不伸缩。<br>虽然 flex 是多个属性的缩写，允许 1 - 3 个值连用，但通常用 1 个值就可以满足需求，它的全部写法可参考下图。<br><img src="https://dn-mhke0kuv.qbox.me/78e9030183f686e0b6ed.png" alt="此处输入图片的描述"><br>单独设置子容器如何沿交叉轴排列：align-self<br><img src="https://dn-mhke0kuv.qbox.me/1d09fe5bb413a6dfa5dd.png" alt="此处输入图片的描述"><br>每个子容器也可以单独定义沿交叉轴排列的方式，此属性的可选值与父容器 align-items 属性完全一致，如果两者同时设置则以子容器的 align-self 属性为准。<br>flex-start：起始端对齐<br><img src="https://dn-mhke0kuv.qbox.me/93d138727b9dd780bdda.png" alt="此处输入图片的描述"><br>flex-end：末尾段对齐<br><img src="https://dn-mhke0kuv.qbox.me/112f075777fdcb6f5d6f.png" alt="此处输入图片的描述"><br>center：居中对齐<br><img src="https://dn-mhke0kuv.qbox.me/d7b0131447247a5228fe.png" alt="此处输入图片的描述"><br>baseline：基线对齐<br><img src="https://dn-mhke0kuv.qbox.me/26b04323df92c4b1b023.png" alt="此处输入图片的描述"><br>stretch：拉伸对齐<br><img src="https://dn-mhke0kuv.qbox.me/ef196e2ba84c406c9ad6.png" alt="此处输入图片的描述"><br><strong>2. 轴</strong><br>如图所示，轴 包括 主轴 和 交叉轴，我们知道 justify-content 属性决定子容器沿主轴的排列方式，align-items 属性决定子容器沿着交叉轴的排列方式。那么轴本身又是怎样确定的呢？在 flex 布局中，flex-direction 属性决定主轴的方向，交叉轴的方向由主轴确定。<br><img src="https://dn-mhke0kuv.qbox.me/5f2a17efffe8f3ab78a4.png" alt="此处输入图片的描述"></p>
-<p>主轴<br>主轴的起始端由 flex-start 表示，末尾段由 flex-end 表示。不同的主轴方向对应的起始端、末尾段的位置也不相同。<br>向右：flex-direction: row<br><img src="https://dn-mhke0kuv.qbox.me/da0c2a225cbbdba47297.png" alt="此处输入图片的描述"><br>向下：flex-direction: column<br><img src="https://dn-mhke0kuv.qbox.me/ab305a50ff35d7e7b6b4.png" alt="此处输入图片的描述"></p>
-<p>向左：flex-direction: row-reverse<br><img src="https://dn-mhke0kuv.qbox.me/f3b60f80ddd45974449d.png" alt="此处输入图片的描述"><br>向上：flex-direction: column-reverse<br><img src="https://dn-mhke0kuv.qbox.me/c219413da157decc5b9e.png" alt="此处输入图片的描述"><br>交叉轴<br>主轴沿逆时针方向旋转 90° 就得到了交叉轴，交叉轴的起始端和末尾段也由 flex-start 和flex-end 表示。<br>上面介绍的几项属性是 flex 布局中最常用到的部分，一般来说可以满足大多数需求，如果实现复杂的布局还需要深入了解更多的属性。</p>
-<p>转载自（<a href="http://blog.csdn.net/magneto7/article/details/70854472）" target="_blank" rel="external">http://blog.csdn.net/magneto7/article/details/70854472）</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CSS</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">flex</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/12/一劳永逸的搞定 flex 布局/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1201,6 +1454,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ES6</a>
               </li>
              
@@ -1214,10 +1471,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">JavaScript</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1237,6 +1490,18 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">MVC</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">MVP</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">MVVM</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Sass</a>
               </li>
              
@@ -1250,6 +1515,14 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">keep-alive</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Angular</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">React</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1281,6 +1554,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">flex</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">entry</a>
               </li>
              
@@ -1290,10 +1567,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">四大核心概念</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">flex</a>
               </li>
              
               <li class="article-tag-list-item">
