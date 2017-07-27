@@ -154,6 +154,190 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-webpack四大核心概念" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/13/webpack四大核心概念/">webpack四大核心概念</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/13/webpack四大核心概念/" class="archive-article-date">
+  	<time datetime="2017-07-13T12:56:44.758Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>基本上每个项目都配置有一个 webpack.config.js ，它的作用如同常规的 gulpfile.js/Gruntfile.js ，就是一个配置项,上一节中提到一段代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">var webpack = require(&apos;webpack&apos;);</div><div class="line">var commonsPlugin = new webpack.optimize.CommonsChunkPlugin(&apos;common.js&apos;);</div><div class="line"> </div><div class="line">module.exports = &#123;</div><div class="line">    //插件项</div><div class="line">    plugins: [commonsPlugin],</div><div class="line">    //页面入口文件配置</div><div class="line">    entry: &#123;</div><div class="line">        index : &apos;./src/js/page/index.js&apos;</div><div class="line">    &#125;,</div><div class="line">    //入口文件输出配置</div><div class="line">    output: &#123;</div><div class="line">        path: &apos;dist/js/page&apos;,</div><div class="line">        filename: &apos;[name].js&apos;</div><div class="line">    &#125;,</div><div class="line">    module: &#123;</div><div class="line">        //加载器配置</div><div class="line">        rules: [</div><div class="line">	      	&#123;test: /\.css$/, use: &apos;css-loader&apos;&#125;,</div><div class="line">	      	&#123; test: /\.css$/, use: &apos;style-loader!css-loader&apos; &#125;,</div><div class="line">	        &#123; test: /\.js$/, use: &apos;jsx-loader?harmony&apos; &#125;,</div><div class="line">	        &#123; test: /\.scss$/, use: &apos;style!css!sass?sourceMap&apos;&#125;,</div><div class="line">	        &#123; test: /\.(png|jpg)$/, use: &apos;url-loader?limit=8192&apos;&#125;</div><div class="line">	      ]</div><div class="line">    &#125;,</div><div class="line">    //其它解决方案配置</div><div class="line">    resolve: &#123;</div><div class="line">        root: &apos;E:/github/flux-example/src&apos;, //绝对路径</div><div class="line">        extensions: [&apos;&apos;, &apos;.js&apos;, &apos;.json&apos;, &apos;.scss&apos;],</div><div class="line">        alias: &#123;</div><div class="line">            AppStore : &apos;js/stores/AppStores.js&apos;,</div><div class="line">            ActionType : &apos;js/actions/ActionType.js&apos;,</div><div class="line">            AppAction : &apos;js/actions/AppAction.js&apos;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>下面来详细介绍一下webpack的四大核心概念</p>
+<h1 id="入口entry"><a href="#入口entry" class="headerlink" title="入口entry"></a>入口entry</h1><h2 id="entry的字符串或者数组写法"><a href="#entry的字符串或者数组写法" class="headerlink" title="entry的字符串或者数组写法"></a>entry的字符串或者数组写法</h2><p>语法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">用法：entry: string|Array&lt;string&gt;</div></pre></td></tr></table></figure></p>
+<p>举个例子，我们需要在webpack.config.js引入一个入口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">const config = &#123;</div><div class="line">  entry: &#123;</div><div class="line">    main: &apos;file.js&apos;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">module.exports = config;</div></pre></td></tr></table></figure></p>
+<p>由于上面是entry 属性的单个入口语法，可以简写为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">const config = &#123;</div><div class="line">  entry: &apos;file.js&apos;</div><div class="line">&#125;;</div><div class="line">module.exports = config;</div></pre></td></tr></table></figure></p>
+<p>但是我们经常遇见将两个不相干的文件打包成一个文件，这样就需要写成数组方式，举个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">const config = &#123;</div><div class="line">  entry: [&apos;file.js&apos;, &apos;index.js&apos;]</div><div class="line">&#125;;</div><div class="line">module.exports = config;</div></pre></td></tr></table></figure></p>
+<h2 id="entry-对象写法"><a href="#entry-对象写法" class="headerlink" title="entry 对象写法"></a>entry 对象写法</h2><p>语法:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">用法：entry: &#123;[entryChunkName: string]: string|Array&lt;string&gt;&#125;</div></pre></td></tr></table></figure></p>
+<p>举个例子，我们需要在webpack.config.js引入多个入口（多页面应用），就需要采用对象的方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">const config = &#123;</div><div class="line">  entry: &#123;</div><div class="line">    app: &apos;./src/app.js&apos;,</div><div class="line">    vendors: &apos;./src/vendors.js&apos;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">module.exports = config;</div></pre></td></tr></table></figure></p>
+<p>上面需要注意的是entry使用了对象的方式，输出的output需要采用动态命名的方法，这个后面介绍到output会详细说明</p>
+<h1 id="打包输出output"><a href="#打包输出output" class="headerlink" title="打包输出output"></a>打包输出output</h1><p>需要注意的是output使用的绝对路径，webpack1.0可以不用担心，但是webpack2.0需要对路径引进path进行处理一下</p>
+<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">var path = require(&quot;path&quot;); //webpack升级到2.0以后，路径需要引用这个模块</div><div class="line">const config = &#123;</div><div class="line">  output: &#123;</div><div class="line">    filename: &apos;bundle.js&apos;,  </div><div class="line">    path: path.resolve(__dirname, &apos;./dist/js&apos;),    //打包后文件放在本地，并且在生成的html引入本地路径js,css等比如</div><div class="line">    publicPath: &quot;http://cdn.example.com/assets/&quot;    //打包后文件放在本地，但是当本地文件被推到生产服务器，比如地址是http://cdn.example.com/assets/，这个时候文件需要引进http://cdn.example.com/assets/打包后文件的名字，publicPath就是将打包后的文件在本地直接引进线上的文件</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">module.exports = config;</div></pre></td></tr></table></figure>
+<p>下面来介绍下output的主要参数</p>
+<h2 id="output-filename"><a href="#output-filename" class="headerlink" title="output.filename"></a>output.filename</h2><p>指定硬盘每个输出文件的名称。在这里你不能指定为绝对路径！output.path 选项规定了文件被写入硬盘的位置。filename 仅用于命名每个文件。<br>单个入口你可以写成：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">var path = require(&quot;path&quot;); //webpack升级到2.0以后，路径需要引用这个模块</div><div class="line">const config = &#123;</div><div class="line">  entry: &apos;file.js&apos;,</div><div class="line">  output: &#123;</div><div class="line">    filename: &apos;bundle.js&apos;,  </div><div class="line">    path: path.resolve(__dirname, &apos;./dist/js&apos;)</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">module.exports = config;</div></pre></td></tr></table></figure></p>
+<p>多个入口的话：<br>你应该使用以下的替换方式来确保每个文件名都不重复。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[name] 被 chunk 的 name 替换。</div><div class="line">[hash] 被 compilation 生命周期的 hash 替换。</div><div class="line">[chunkhash] 被 chunk 的 hash 替换。</div></pre></td></tr></table></figure></p>
+<p>举个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var path = require(&quot;path&quot;); //webpack升级到2.0以后，路径需要引用这个模块</div><div class="line">const config = &#123;</div><div class="line">  entry: &#123;</div><div class="line">  	a: &apos;file.js&apos;,</div><div class="line">  	b: &apos;test.js&apos;</div><div class="line">  &#125;</div><div class="line">  output: &#123;</div><div class="line">    filename: &apos;[name]-[hash].js&apos;,  </div><div class="line">    path: path.resolve(__dirname, &apos;./dist/js&apos;)</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">module.exports = config;</div></pre></td></tr></table></figure></p>
+<h2 id="output-path-必选"><a href="#output-path-必选" class="headerlink" title="output.path(必选)"></a>output.path(必选)</h2><p>导出目录为绝对路径，需要注意的是output使用的绝对路径，webpack1.0可以不用担心，但是webpack2.0需要对路径引进path进行处理一下<br>举个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var path = require(&quot;path&quot;); //webpack升级到2.0以后，路径需要引用这个模块</div><div class="line">const config = &#123;</div><div class="line">  entry: &#123;</div><div class="line">  	a: &apos;file.js&apos;,</div><div class="line">  	b: &apos;test.js&apos;</div><div class="line">  &#125;</div><div class="line">  output: &#123;</div><div class="line">    filename: &apos;[name]-[hash].js&apos;,  </div><div class="line">    path: path.resolve(__dirname, &apos;./dist/js&apos;)</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">module.exports = config;</div></pre></td></tr></table></figure></p>
+<p>其他参数详见<a href="https://webpack.js.org/concepts/output/" target="_blank" rel="external">output.options</a></p>
+<h1 id="加载器Loaders"><a href="#加载器Loaders" class="headerlink" title="加载器Loaders"></a>加载器Loaders</h1><p>loader 是对应用程序中资源文件进行转换。它们是（运行在 Node.js 中的）函数，可以将资源文件作为参数的来源，然后返回新的资源文件,说成大白话就是将本地文件翻译成浏览器识别的文件。</p>
+<h2 id="webpack中有三种方式引用loaders"><a href="#webpack中有三种方式引用loaders" class="headerlink" title="webpack中有三种方式引用loaders"></a>webpack中有三种方式引用loaders</h2><p>(1) require方式<br>举个例子:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">require(&apos;style-loader!css-loader?modules!./styles.css&apos;);</div></pre></td></tr></table></figure></p>
+<p>上面！是区分多个loaders的标志，?是loaders带的处理参数，类似于web的query。</p>
+<p>(2) webpack CLI<br>也就是直接在gitBash里面执行打包代码的时候直接带上<br>举个例子:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">webpack --module-bind jade-loader --module-bind &apos;css=style-loader!css-loader&apos;</div></pre></td></tr></table></figure></p>
+<p>上面这句话是将.jade后缀的文件用jade-loader处理，将.css后缀的文件用style-loader和css-loader处理。</p>
+<p>(3)直接在webpack.config.js配置(这个常用)<br>举个例子:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">module.exports = &#123;</div><div class="line">  module: &#123;</div><div class="line">    rules: [</div><div class="line">      &#123;test: /\.css$/, use: &apos;css-loader&apos;&#125;,</div><div class="line">      &#123;test: /\.ts$/, use: &apos;ts-loader&apos;&#125;</div><div class="line">    ]</div><div class="line">  &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>上面的意思是将所有以.css后缀结尾的文件用css-loader处理，将所有以.ts后缀结尾的文件用ts-loader处理<br>如果我们绑定多个loaders,配置如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">module.exports = &#123;</div><div class="line">  module: &#123;</div><div class="line">    rules: [</div><div class="line">      &#123;test: /\.css$/, use: &apos;css-loader&apos;&#125;,</div><div class="line">      &#123;</div><div class="line">      	test: /\.ts$/, </div><div class="line">      	use: [</div><div class="line">          &#123; loader: &apos;style-loader&apos;&#125;,</div><div class="line">          &#123; loader: &apos;css-loader&apos;&#125;</div><div class="line">        ]</div><div class="line">       &#125;</div><div class="line">    ]</div><div class="line">  &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>如果给loaders配置参数,配置如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">module.exports = &#123;</div><div class="line">  module: &#123;</div><div class="line">    rules: [</div><div class="line">      &#123;test: /\.css$/, use: &apos;css-loader&apos;&#125;,</div><div class="line">      &#123;</div><div class="line">      	test: /\.ts$/, </div><div class="line">      	use: [</div><div class="line">          &#123; loader: &apos;style-loader&apos;&#125;,</div><div class="line">          &#123; </div><div class="line">          	loader: &apos;css-loader&apos;,</div><div class="line">          	options: &#123;</div><div class="line">              modules: true</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        ]</div><div class="line">      &#125;</div><div class="line">    ]</div><div class="line">  &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<h1 id="插件Plugins"><a href="#插件Plugins" class="headerlink" title="插件Plugins"></a>插件Plugins</h1><p>插件是 webpack 的支柱功能。在你使用 webpack 配置时，webpack 自身也构建于同样的插件系统上，插件目的在于解决 loader 无法实现的其他事。</p>
+<h2 id="用法："><a href="#用法：" class="headerlink" title="用法："></a>用法：</h2><p>由于 plugin 可以携带参数/选项，你必须在 wepback 配置中，向 plugins 属性传入 new 实例。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">var path = require(&quot;path&quot;); //webpack升级到2.0以后，路径需要引用这个模块</div><div class="line">var htmlWebpackPlugin = require(&apos;html-webpack-plugin&apos;); //采用CMD的方式引进html-webpack-plugin插件</div><div class="line">module.exports = &#123;</div><div class="line">	entry: &#123;</div><div class="line">		mian: &apos;./src/script/main.js&apos;,</div><div class="line">		test: &apos;./src/script/test.js&apos;</div><div class="line">	&#125;,</div><div class="line">	output: &#123;</div><div class="line">		path: path.resolve(__dirname, &apos;./dist/js&apos;),</div><div class="line">		filename: &apos;[name]-[hash].js&apos;    //区分文件有[name], [hash], [chunkhash]</div><div class="line">	&#125;,</div><div class="line">	plugins: [  //注意这里是数组的方式</div><div class="line">		new htmlWebpackPlugin()</div><div class="line">	]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>关于plugin的寻找，可以去npm官网上找你需要的插件，上面有配套的参数说明</p>
+<p>转载自（<a href="https://manlili.github.io/categories/webpack%E6%8A%80%E6%9C%AF/）" target="_blank" rel="external">https://manlili.github.io/categories/webpack%E6%8A%80%E6%9C%AF/）</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Webpack</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">loaders</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">plugins</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">entry</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">ouput</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">四大核心概念</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/13/webpack四大核心概念/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-深入理解BFC" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/12/深入理解BFC/">深入理解BFC</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/12/深入理解BFC/" class="archive-article-date">
+  	<time datetime="2017-07-12T13:39:37.894Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、BFC是什么？"><a href="#一、BFC是什么？" class="headerlink" title="一、BFC是什么？"></a>一、BFC是什么？</h2><p>　　在解释 BFC 是什么之前，需要先介绍 Box、Formatting Context的概念。</p>
+<h3 id="Box-CSS布局的基本单位"><a href="#Box-CSS布局的基本单位" class="headerlink" title="Box: CSS布局的基本单位"></a>Box: CSS布局的基本单位</h3><p>Box 是 CSS 布局的对象和基本单位， 直观点来说，就是一个页面是由很多个 Box 组成的。元素的类型和 display 属性，决定了这个 Box 的类型。 不同类型的 Box， 会参与不同的 Formatting Context（一个决定如何渲染文档的容器），因此Box内的元素会以不同的方式渲染。让我们看看有哪些盒子：</p>
+<p>block-level box:</p>
+<p>display 属性为 block, list-item, table 的元素，会生成 block-level box。并且参与 block fomatting context；</p>
+<p>inline-level box:</p>
+<p>display 属性为 inline, inline-block, inline-table 的元素，会生成 inline-level box。并且参与 inline formatting context；</p>
+<h3 id="BFC-定义"><a href="#BFC-定义" class="headerlink" title="BFC 定义"></a>BFC 定义</h3><p>　　BFC(Block formatting context)直译为”块级格式化上下文”。它是一个独立的渲染区域，只有Block-level box参与， 它规定了内部的Block-level Box如何布局，并且与这个区域外部毫不相干。
+　　</p>
+<h2 id="二、哪些元素会生成BFC"><a href="#二、哪些元素会生成BFC" class="headerlink" title="二、哪些元素会生成BFC?"></a>二、哪些元素会生成BFC?</h2><p>根元素<br>float属性不为none<br>position为absolute或fixed<br>display为inline-block, table-cell, table-caption, flex, inline-flex<br>overflow不为visible</p>
+<h2 id="三、BFC的作用及原理"><a href="#三、BFC的作用及原理" class="headerlink" title="三、BFC的作用及原理"></a>三、BFC的作用及原理</h2><ol>
+<li>自适应两栏布局</li>
+<li>清除内部浮动</li>
+<li>防止垂直 margin 重叠
+　　</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CSS</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">BFC</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/12/深入理解BFC/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-圣杯布局和双飞翼布局" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -768,10 +952,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ES6</a>
               </li>
              
@@ -792,6 +972,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">let</a>
               </li>
              
@@ -801,6 +985,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">变量的解构赋值</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ES7</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -828,14 +1016,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Angular</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">React</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Vue-router</a>
               </li>
              
@@ -845,6 +1025,14 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">WebSocket</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Angular</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">React</a>
               </li>
              
               <li class="article-tag-list-item">

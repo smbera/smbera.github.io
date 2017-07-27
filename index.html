@@ -154,6 +154,137 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-ES7之幂运算符" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/27/ES7之幂运算符/">ES7之幂运算符（**）</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/27/ES7之幂运算符/" class="archive-article-date">
+  	<time datetime="2017-07-27T12:07:29.129Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="幂运算符（-）"><a href="#幂运算符（-）" class="headerlink" title="幂运算符（**）"></a>幂运算符（**）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">2 ** 2 // 4</div><div class="line">2 ** 3 // 8</div><div class="line"></div><div class="line">let a = 1.5;</div><div class="line">a **= 2;</div><div class="line">// 等同于 a = a * a;</div></pre></td></tr></table></figure>
+<p>注意，在 V8 引擎中，指数运算符与Math.pow的实现不相同，对于特别大的运算结果，两者会有细微的差异。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Math.pow(99, 99)</div><div class="line">// 3.697296376497263e+197</div><div class="line"></div><div class="line">99 ** 99</div><div class="line">// 3.697296376497268e+197</div></pre></td></tr></table></figure></p>
+<p>上面代码中，两个运算结果的最后一位有效数字是有差异的。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES7</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/27/ES7之幂运算符/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-ES7之Array.prototype.includes()" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/27/ES7之Array.prototype.includes()/">ES7之Array.prototype.includes()</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/27/ES7之Array.prototype.includes()/" class="archive-article-date">
+  	<time datetime="2017-07-27T12:02:16.830Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Array-prototype-includes"><a href="#Array-prototype-includes" class="headerlink" title="Array.prototype.includes()"></a>Array.prototype.includes()</h2><p>Array.prototype.includes方法返回一个布尔值，表示某个数组是否包含给定的值。该方法的第二个参数表示搜索的起始位置，默认为0。如果第二个参数为负数，则表示倒数的位置，如果这时它大于数组长度（比如第二个参数为-4，但数组长度为3），则会重置为从0开始。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[1, 2, 3].includes(2)     // true</div><div class="line">[1, 2, 3].includes(4)     // false</div><div class="line">[1, 2, NaN].includes(NaN) // true</div><div class="line">[-0].includes(+0)         //true</div><div class="line"></div><div class="line">[1, 2, 3].includes(3, 3);  // false</div><div class="line">[1, 2, 3].includes(3, -1); // true</div></pre></td></tr></table></figure></p>
+<p>没有该方法之前，我们通常使用数组的indexOf方法，检查是否包含某个值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">if (arr.indexOf(el) !== -1) &#123;</div><div class="line">  // ...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>indexOf方法有两个缺点，一是不够语义化，它的含义是找到参数值的第一个出现位置，所以要去比较是否不等于-1，表达起来不够直观。二是，它内部使用严格相等运算符（===）进行判断，这会导致对NaN的误判。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[NaN].indexOf(NaN)</div><div class="line">// -1</div></pre></td></tr></table></figure></p>
+<p>includes使用的是不一样的判断算法，就没有这个问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[NaN].includes(NaN)</div><div class="line">// true</div></pre></td></tr></table></figure></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES7</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/27/ES7之Array.prototype.includes()/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-【转载】JavaScript 内存泄漏教程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -962,546 +1093,6 @@ setTimeout(function timeout() {
 
 
   
-    <article id="post-【转载】vue2组件懒加载浅析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/25/【转载】vue2组件懒加载浅析/">【转载】vue2组件懒加载浅析</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/25/【转载】vue2组件懒加载浅析/" class="archive-article-date">
-  	<time datetime="2017-07-25T02:09:55.535Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-25</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><a href="http://www.cnblogs.com/zhanyishu/p/6587571.html" title="Permalink to vue2组件懒加载浅析 - 詹一树 - 博客园" target="_blank" rel="external">Source</a></p>
-<h1 id="vue2组件懒加载浅析-詹一树-博客园"><a href="#vue2组件懒加载浅析-詹一树-博客园" class="headerlink" title="vue2组件懒加载浅析 - 詹一树 - 博客园"></a>vue2组件懒加载浅析 - 詹一树 - 博客园</h1><p>vue2组件懒加载浅析</p>
-<p><img src="http://images2015.cnblogs.com/blog/985514/201703/985514-20170320155813611-1677918561.png" alt=""></p>
-<p>一、 什么是懒加载</p>
-<pre><code>懒加载也叫延迟加载，即在需要的时候进行加载，随用随载。
-</code></pre><p>二、为什么需要懒加载</p>
-<pre><code>在单页应用中，如果没有应用懒加载，运用webpack打包后的文件将会异常的大，造成进入首页时，需要加载的内容过多，延时过长，不利于用户体验，而运用懒加载则可以将页面进行划分，需要的时候加载页面，可以有效的分担首页所承担的加载压力，减少首页加载用时
-</code></pre><p>三、如何与webpack配合实现组件懒加载</p>
-<p>　　1、在webpack配置文件中的output路径配置chunkFilename属性</p>
-<pre><code>output: {
-        path: resolve(__dirname, &apos;dist&apos;),
-        filename: options.dev ? &apos;[name].js&apos; : &apos;[name].js?[chunkhash]&apos;,
-        chunkFilename: &apos;chunk[id].js?[chunkhash]&apos;,
-        publicPath: options.dev ? &apos;/assets/&apos; : publicPath
-    },
-</code></pre><p>　　chunkFilename路径将会作为组件懒加载的路径</p>
-<p>　　2、配合webpack支持的异步加载方法</p>
-<ul>
-<li>resolve =&gt; require([URL], resolve), 支持性好</li>
-<li>() =&gt; system.import(URL) , webpack2官网上已经声明将逐渐废除, 不推荐使用</li>
-<li><p>() =&gt; import(URL), webpack2官网推荐使用, 属于es7范畴, 需要配合babel的syntax-dynamic-import插件使用, 具体使用方法如下</p>
-<pre><code>npm install --save-dev babel-core babel-loader babel-plugin-syntax-dynamic-import babel-preset-es2015
-</code></pre></li>
-</ul>
-<pre><code>use: [{
-    loader: &apos;babel-loader&apos;,
-    options: {
-      presets: [[&apos;es2015&apos;, {modules: false}]],
-      plugins: [&apos;syntax-dynamic-import&apos;]
-    }
-  }]
-</code></pre><p>四、具体实例中实现懒加载</p>
-<p>　　1、路由中配置异步组件</p>
-<pre><code>export default new Router({
-    routes: [
-        {
-            mode: &apos;history&apos;,
-            path: &apos;/my&apos;,
-            name: &apos;my&apos;,
-            component:  resolve =&gt; require([&apos;../page/my/my.vue&apos;], resolve),//懒加载
-        },
-    ]
-})
-</code></pre><p>　　2、实例中配置异步组件</p>
-<pre><code>components: {
-        historyTab: resolve =&gt; {require([&apos;../../component/historyTab/historyTab.vue&apos;], resolve)},//懒加载
-        //historyTab: () =&gt; import(&apos;../../component/historyTab/historyTab.vue&apos;)
-    },
-</code></pre><p>　　3、全局注册异步组件</p>
-<pre><code>Vue.component(&apos;mideaHeader&apos;, () =&gt; {
-    System.import(&apos;./component/header/header.vue&apos;)
-})
-</code></pre><p>五、配置异步组件实现懒加载的问题分析</p>
-<p>　　1、多次进出同一个异步加载页面是否会造成多次加载组件？</p>
-<p>　　答：否，首次需要用到组件时浏览器会发送请求加载组件，加载完将会缓存起来，以供之后再次用到该组件时调用</p>
-<p>　　2、在多个地方使用同一个异步组件时是否造成多次加载组件？如：</p>
-<pre><code>//a页面
-export default {
-    components: {
-        historyTab: resolve =&gt; {require([&apos;../../component/historyTab/historyTab.vue&apos;], resolve)},//懒加载
-    },
-}
-
-//b页面
-export default {
-    components: {
-        historyTab: resolve =&gt; {require([&apos;../../component/historyTab/historyTab.vue&apos;], resolve)},//懒加载
-    },
-}
-</code></pre><p>　　答：否，理由同上</p>
-<p>　　3、如果在两个异步加载的页面中分别同步与异步加载同一个组件时是否会造成资源重用？ 如：</p>
-<pre><code>//a页面
-import historyTab from &apos;../../component/historyTab/historyTab.vue&apos;;
-export default {
-    components: {
-        historyTab
-    },
-}
-
-//b页面
-export default {
-    components: {
-        historyTab: resolve =&gt; {require([&apos;../../component/historyTab/historyTab.vue&apos;], resolve)},//懒加载
-    },
-}
-</code></pre><p>　　答: 会, 将会造成资源重用, 根据打包后输出的结果来看, a页面中会嵌入historyTab组件的代码, b页面中的historyTab组件还是采用异步加载的方式, 另外打包chunk；</p>
-<p>　　解决方案： 组件开发时， 如果根页面没有导入组件的情况下，而是在其他异步加载页面中同时用到组件， 那么为实现资源的最大利用，在协同开发的时候全部人都使用异步加载组件</p>
-<p>　　4、在异步加载页面中载嵌入异步加载的组件时对页面是否会有渲染延时影响？</p>
-<p>　　答：会， 异步加载的组件将会比页面中其他元素滞后出现， 页面会有瞬间闪跳影响；</p>
-<p>　　解决方案：因为在首次加载组件的时候会有加载时间， 出现页面滞后， 所以需要合理的进行页面结构设计， 避免首次出现跳闪现象；</p>
-<p>六、懒加载的最终实现方案</p>
-<p>　　1、路由页面以及路由页面中的组件全都使用懒加载</p>
-<p>　　优点：（1）最大化的实现随用随载</p>
-<p>　　　　　（2）团队开发不会因为沟通问题造成资源的重复浪费　　　　</p>
-<p>　　缺点：（1）当一个页面中嵌套多个组件时将发送多次的http请求，可能会造成网页显示过慢且渲染参差不齐的问题</p>
-<p>　　2、路由页面使用懒加载， 而路由页面中的组件按需进行懒加载, 即如果组件不大且使用不太频繁, 直接在路由页面中导入组件, 如果组件使用较为频繁使用懒加载  </p>
-<p>　　优点：（1）能够减少页面中的http请求，页面显示效果好</p>
-<p>　　缺点：（2）需要团队事先交流， 在框架中分别建立懒加载组件与非懒加载组件文件夹</p>
-<p>　　3、路由页面使用懒加载，在不特别影响首页显示延迟的情况下，根页面合理导入复用组件，再结合方案2</p>
-<p>　　优点：（1）合理解决首页延迟显示问题</p>
-<p>　　　　　（2）能够最大化的减少http请求， 且做其他他路由界面的显示效果最佳</p>
-<p>　　缺点：（1）还是需要团队交流，建立合理区分各种加载方式的组件文件夹</p>
-<p>七、采用第三种方案进行目录结构设计</p>
-<p>　　<img src="http://images2015.cnblogs.com/blog/985514/201703/985514-20170320140532736-1187967947.png" alt=""></p>
-<p>八、具体代码实现设计</p>
-<p>　1、路由设计：</p>
-<pre><code>import Router from &apos;vue-router&apos;;
-import Vue from &apos;vue&apos;;
-Vue.use(Router);
-
-export default new Router({
-    routes: [
-        {
-            mode: &apos;history&apos;,
-            path: &apos;/home&apos;,
-            name: &apos;home&apos;,
-            component:  resolve =&gt; require([URL], resolve),//懒加载
-            children: [
-                {
-                    mode: &apos;history&apos;,
-                    path: &apos;/home/:name&apos;,
-                    name: &apos;any&apos;,
-                    component:  resolve =&gt; require([&apos;../page/any/any.vue&apos;], resolve),//懒加载
-                },
-            ]
-        },
-        {
-            mode: &apos;history&apos;,
-            path: &apos;/store&apos;,
-            name: &apos;store&apos;,
-            component:  resolve =&gt; require([&apos;../page/store/store.vue&apos;], resolve),//懒加载,
-            children: [
-                {
-                    mode: &apos;history&apos;,
-                    path: &apos;/store/:name&apos;,
-                    name: &apos;any&apos;,
-                    component:  resolve =&gt; require([&apos;../page/any/any.vue&apos;], resolve),//懒加载
-                },
-            ]
-        },
-        {
-            mode: &apos;history&apos;,
-            path: &apos;/my&apos;,
-            name: &apos;my&apos;,
-            component:  resolve =&gt; require([&apos;../page/my/my.vue&apos;], resolve),//懒加载,
-            children: [
-                {
-                    mode: &apos;history&apos;,
-                    path: &apos;/my/:name&apos;,
-                    name: &apos;any&apos;,
-                    component:  resolve =&gt; require([&apos;../page/any/any.vue&apos;], resolve),//懒加载
-                },
-            ]
-        },
-    ]
-})
-</code></pre><p>　　（1）首层的路由根组件分别对应的tab页面</p>
-<p>　　（2）根目录后跟着各个子路由页面，子路由采用动态路由配合路由的编程式导航再加上vuex，最优化提高开发效率</p>
-<p>　　直接贴上代码：</p>
-<pre><code>/**
- * Created by ZHANZF on 2017-3-20.
- */
-//vuex配置
-import Vue from &apos;vue&apos;;
-import Vuex from &apos;vuex&apos;;
-Vue.use(Vuex);
-export default new Vuex.Store({
-    state: {
-        //路由组件存储器
-        routers: {}
-    },
-    getters: {
-        routers: state =&gt; {
-            return state.data;
-        }
-    },
-    mutations: {
-        //动态增加路由
-        addRouter: (state, data) =&gt; {
-            state.routers = Object.assign({}, state.routers, {
-                [data.name]: data.component
-            });
-        }
-    },
-    actions: {
-        acMethods({commit}) {
-
-        }
-    },
-})
-
-//根目录中注册路由组件
-window.midea = {
-    registerRouter(name, component) {
-        Store.commit(&apos;addRouter&apos;, {
-            name: name,
-            component: component
-        })
-    }
-};
-
-//页面使用路由导航
-
-
-openAnyPage() {  
-midea.registerRouter(&apos;module&apos;, resolve =&gt; {require([&apos;../module/module.vue&apos;], resolve)});//懒加载  
-this.$router.push({path: &apos;/home/module&apos;, query: {title: this.title}});  
-}
-
-
-//页面中使用动态组件   
-http://www.google-analytics.com/ga.js&quot;&gt; src=&quot;&quot;&gt;http://www.cnblogs.com/any.js&quot;&gt;
-export default {
-    data () {
-        return {
-            routeName: &apos;&apos;,
-            currentRouter: &apos;&apos;,
-            title: &apos;&apos;,
-        }
-    },
-    created() {
-        this.routeName = this.$route.params.name;
-        this.title = this.$route.query.title;
-        this.currentRouter = this.$store.state.routers[this.routeName];
-    },
-
-    methods: {
-
-    }
-}
-</code></pre><p> <img src="http://images2015.cnblogs.com/blog/985514/201703/985514-20170320152952596-1941018118.png" alt=""></p>
-<p>二、动态组件的设计</p>
-<p>　　直接用即用即加的方式在实例或路由中直接配置异步组件</p>
-<p>　　</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/25/【转载】vue2组件懒加载浅析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-【转载】在JavaScript中prototype和__proto__有什么区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/24/【转载】在JavaScript中prototype和__proto__有什么区别/">【转载】在JavaScript中prototype和__proto__有什么区别</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/24/【转载】在JavaScript中prototype和__proto__有什么区别/" class="archive-article-date">
-  	<time datetime="2017-07-24T01:06:54.285Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><a href="http://www.cnblogs.com/erbingbing/p/6534342.html" title="Permalink to 在 JavaScript 中 prototype 和 __proto__ 有什么区别 - SmallW" target="_blank" rel="external">Source</a></p>
-<h1 id="在-JavaScript-中-prototype-和-proto-有什么区别-SmallW"><a href="#在-JavaScript-中-prototype-和-proto-有什么区别-SmallW" class="headerlink" title="在 JavaScript 中 prototype 和 proto 有什么区别 - SmallW"></a>在 JavaScript 中 prototype 和 <strong>proto</strong> 有什么区别 - SmallW</h1><p>本文主要讲三个 问题</p>
-<ol>
-<li>prototype 和 <strong>proto</strong></li>
-<li>function 和 object</li>
-<li>new 到底发生了什么</li>
-</ol>
-<h3 id="prototype-和-proto"><a href="#prototype-和-proto" class="headerlink" title="prototype 和 proto"></a>prototype 和 <strong>proto</strong></h3><pre><code>首先我们说下在 JS 中，常常让我们感到困惑的地方，就是 prototype 和 __proto__ 到底是干嘛的
-
-1. __proto__ 就是 Javascript中  所谓的原型 （这里，我们还是拿具体的例子来说明吧）
-
-
-    function A (name) {         // 这里是一个构造函数
-        thia.name = name
-    }
-
-    var Aobj = {                // 这里是一个 对对象字面量
-        name: &apos;&apos;
-    }
-
-    // 我们分别打印出来这二个对象看看
-    console.dir(A)
-
-    console.dir(Aobj)
-</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311125257467-187518383.png" alt=""></p>
-<pre><code>这里我们可以很明显的看到 
-构造函数的  __proto__ 属性 指向了 function()
-
-对象字面量的  __proto__ 属性 指向了 Object
-
-为什么 指向的 是不一样的呢？
-
-思考下:
-
-确实是 不一样的， 因为 构造函数本身也是一个 函数， 所以它 的原型 指向  function() 
-
-而对象字面量 是一个 对象， 那么他的 原型肯定是指向  Object
-
-扩展思考，如果 是一个数组 对象， 那么它的   __proto__  会指向什么呐？
-
-
-    const arr = [112,22,3333] 
-    console.dir(arr)
-</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311133751811-1547361806.png" alt=""></p>
-<pre><code>没错， 这里的  __proto__ 就指向了 Array[0]
-
-
-
-
-总结 ：一个对象的 __proto__ 属性和自己的内部属性[[Prototype]]指向一个相同的值 (通常称这个值为原型)
-
-tips：firefox、chrome等浏览器把对象内部属性 [[Prototype]] 用 __proto__ 的形式暴露了出来.(老版本的IE并不支持 __proto__ ,IE11中已经加上了 __proto__ 属性)
-
-
-2.  prototype : 看看上面的 截图，你会发现 只有 构造函数 中 有这个玩意儿，  对的。 prototype 确实 是 在 function 中特有的。 别的对象类型中 都不会有的属性。
-</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311135330029-880878106.png" alt=""></p>
-<pre><code>我们在看这个 function 对象属性的 时候就会发现这么一个 prototype 的属性，它的值是 一个 Object 。 点开这个 obj 我们就会发现啊， 这个 obj 的constructor 属性 指向了 这个构造函数本身。 是不是很神奇，至于为什么会是这样子的。
-
-留一个 思考题吧， 为什么在 javascript 中，函数对象的 prototype 属性的 constructor 指向是 函数本身？
-
-（在下面的介绍中，我们会 回答到这个问题）
-</code></pre><h3 id="function-和-object"><a href="#function-和-object" class="headerlink" title="function 和 object"></a>function 和 object</h3><pre><code>同样，我们来先看一个例子。
-
-
-    function B(name) {
-        this.name = name
-        this.getName = function() {
-            console.log(this.name)
-        }
-
-        var c = &apos;test&apos;
-        console.log(c)
-    }
-
-    var b = new B(&apos;testb&apos;)      // test
-    console.log(b)              // B: { name: &apos;testb&apos;,getName: function() {} }
-    B(&apos;testc&apos;)                  // test
-
-
-看到上面的 输出 是不是觉得又很诧异了。
-确实， 为什么 在 new 的时候， 构造函数居然 执行了一次。
-
-同样， 在非严格模式下， 我们直接执行 构造函数， B(&apos;testc&apos;) 相当于：
-
-
-    // window.name = &apos;testc&apos;
-    // window.getName = function() { console.log(this.name) }
-
-
-思考： 
-我们的函数B既可以直接执行,又可以new一下返回一个对象。function和object到底是什么关系,new的时候发生了什么?
-</code></pre><h3 id="new-到底发生了什么"><a href="#new-到底发生了什么" class="headerlink" title="new 到底发生了什么"></a>new 到底发生了什么</h3><pre><code>还是上面的 问题， 当我们执行 var b = new B(&apos;testb&apos;) 的时候发生了什么？
-
-MDN 上的介绍是这样的说的：
-
-对于 var b = new B(&apos;testb&apos;)
-
-
-//  javascript 实际上执行的是：
-
-var o = new Object()   // 生成一个 新的 对象  b 这里 可以约等于  var b = {}
-
-o.__proto__ = B.prototype // 这里就是 函数对象中 独有的 prototype 属性。
-
-                          // 这个独有的 prototype 属性 包含了一个 constructor 属性方法，指向的就是 构造函数， 也就是 这里的  function B(name) {}
-
-B.call(o)                 // tips :这里 就需要注意了，因为很多同学都搞不清楚 这里是什么意思。
-
-                          // 由于 call 的使用 将这里this是指向o, 所以就 可以 把什么this.name/getName 强行的绑定到o上。同时，需要注意的一点就是， 这里的 构造函数 执行科一遍， 只不过是 将 this 指向的 属性和方法，都 强行的 给 新创建的  这个 o 对象 绑定了一遍。
-
-var b = o                 // 把 这个 o 返回给了  b 。 从而完成了  var b = new B(&apos;testb&apos;) 的过程
-
-// 如果 还是不明白是 什么意思的话。 我们来看看  call 是干嘛用的 
-
-
-    // 关于 call 的使用说明 
-
-    var o1 = {
-        name: &apos;111&apos;,
-        getName: function() {
-            console.log(this.name)
-        }
-    }
-
-    var o2 = {
-        name: &apos;222&apos;
-    }
-
-    o1.getName.call(o2)  // 222
-
-
-所以 这个时候，我们反过头来 看看  这个 new 的对象都有哪些 属性 和方法。
-
-我们 可以 来 做一个 小实验，来 证明下，我们以上所说的东西。
-
-
-function A (name) {         // 这里是一个构造函数
-    this.name = name
-}
-
-var o = {}
-o.__proto__ = A.prototype
-A.call(o)
-var a = o
-
-var b = new A()
-
-console.log(a)
-console.log(b)
-</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311162654873-1613930357.png" alt=""></p>
-<pre><code>果然 和 我们想象 的一模一样。 
-
-至于 js 为什么要 把 新建 对象的 原型 指向 构造函数的 prototype 属性。
-
-我们可以这样来理解。 因为 通过 new 方法来创建的  obj 。肯定是需要 一个 标记 来找到自己的 构造器函数。
-所以 为了让 整个 程序结构看上去 合理。 我们需要   把 新建 对象的 原型 指向 构造函数的 prototype 属性。
-</code></pre><p>`<br>所以到最后，我们 总结一下 。</p>
-<p>在 javascript 中 prototype 和 <strong>proto</strong> 到底有什么区别。</p>
-<p>prototype 是 面向 构造函数，来思考，<br><strong>proto</strong> 是 面向 实例化 后 的对象 来思考就对了。</p>
-<p>`</p>
-<p><code>最后再 给一个例子， 是一个，我们经常会在开发中用到的 例子。</code></p>
-<pre><code>var Person = function(){}
-Person.prototype.sayName = function() {
-    alert(&apos;my name is xxx&apos;)
-}
-
-Person.prototype.age = 12
-
-var p = new Person()
-
-p.sayName()
-
-// 当我们 实例化 之后， 在我们 去执行 p.sayName() 的 时候，我们就会去 this 内部去 查找（这里就是 构造函数 Person 内部去找。 可是 没找到啊。只是一个 空函数， 怎么办呢？）
-
-// 这个时候 就会沿着 原型链向上追溯， 但是如何 追溯呢？
-
-// 这里就要用到 __proto__ 属性 来作为 追溯的 桥梁。
-
-// 因为 实例化对象的 __proto__ 属性 指向的就是 构造函数的  prototype 属性所对应的 对象啊
-</code></pre><p><img src="http://images2015.cnblogs.com/blog/675289/201703/675289-20170311172017998-131500932.png" alt=""></p>
-<p>最后 终于 愉快的 找到了，自己的对象啦~ 单身狗就可能一直找不到，或者看不懂这篇文章。</p>
-<p>好了，以上就是 在 看 vuejs 源码 的时候 关于 new 的 一个 知识 扩展。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">prototype</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">__proto__</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/24/【转载】在JavaScript中prototype和__proto__有什么区别/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1598,10 +1189,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ES6</a>
               </li>
              
@@ -1622,6 +1209,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">let</a>
               </li>
              
@@ -1631,6 +1222,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">变量的解构赋值</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ES7</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1658,14 +1253,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Angular</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">React</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Vue-router</a>
               </li>
              
@@ -1675,6 +1262,14 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">WebSocket</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Angular</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">React</a>
               </li>
              
               <li class="article-tag-list-item">
