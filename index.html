@@ -154,6 +154,814 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-【转载】JavaScript 内存泄漏教程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/27/【转载】JavaScript 内存泄漏教程/">【转载】JavaScript 内存泄漏教程</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/27/【转载】JavaScript 内存泄漏教程/" class="archive-article-date">
+  	<time datetime="2017-07-27T11:49:28.814Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://www.ruanyifeng.com/blog/2017/04/memory-leak.html" title="Permalink to JavaScript 内存泄漏教程 - 阮一峰的网络日志" target="_blank" rel="external">Source</a></p>
+<h1 id="JavaScript-内存泄漏教程"><a href="#JavaScript-内存泄漏教程" class="headerlink" title="JavaScript 内存泄漏教程"></a>JavaScript 内存泄漏教程</h1><h2 id="一、什么是内存泄漏？"><a href="#一、什么是内存泄漏？" class="headerlink" title="一、什么是内存泄漏？"></a>一、什么是内存泄漏？</h2><p>程序的运行需要内存。只要程序提出要求，操作系统或者运行时（runtime）就必须供给内存。</p>
+<p>对于持续运行的服务进程（daemon），必须及时释放不再用到的内存。否则，内存占用越来越高，轻则影响系统性能，重则导致进程崩溃。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017041701-1.png" alt=""></p>
+<p>不再用到的内存，没有及时释放，就叫做内存泄漏（memory leak）。</p>
+<p>有些语言（比如 C 语言）必须手动释放内存，程序员负责内存管理。</p>
+<blockquote>
+<pre><code>char * buffer;
+buffer = (char*) malloc(42);
+
+// Do something with buffer
+
+free(buffer);
+</code></pre></blockquote>
+<p>上面是 C 语言代码，<code>malloc</code>方法用来申请内存，使用完毕之后，必须自己用<code>free</code>方法释放内存。</p>
+<p>这很麻烦，所以大多数语言提供自动内存管理，减轻程序员的负担，这被称为”垃圾回收机制”（garbage collector）。</p>
+<h2 id="二、垃圾回收机制"><a href="#二、垃圾回收机制" class="headerlink" title="二、垃圾回收机制"></a>二、垃圾回收机制</h2><p>垃圾回收机制怎么知道，哪些内存不再需要呢？</p>
+<p>最常使用的方法叫做<a href="https://en.wikipedia.org/wiki/Reference_counting" target="_blank" rel="external">“引用计数”</a>（reference counting）：语言引擎有一张”引用表”，保存了内存里面所有的资源（通常是各种值）的引用次数。如果一个值的引用次数是<code>0</code>，就表示这个值不再用到了，因此可以将这块内存释放。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017041703.png" alt=""></p>
+<p>上图中，左下角的两个值，没有任何引用，所以可以释放。</p>
+<p>如果一个值不再需要了，引用数却不为<code>0</code>，垃圾回收机制无法释放这块内存，从而导致内存泄漏。</p>
+<blockquote>
+<pre><code>const arr = [1, 2, 3, 4];
+console.log(&apos;hello world&apos;);
+</code></pre></blockquote>
+<p>上面代码中，数组[<code>1, 2, 3, 4]</code>是一个值，会占用内存。变量<code>arr</code>是仅有的对这个值的引用，因此引用次数为<code>1</code>。尽管后面的代码没有用到<code>arr</code>，它还是会持续占用内存。</p>
+<p>如果增加一行代码，解除<code>arr</code>对[<code>1, 2, 3, 4]</code>引用，这块内存就可以被垃圾回收机制释放了。</p>
+<blockquote>
+<pre><code>let arr = [1, 2, 3, 4];
+console.log(&apos;hello world&apos;);
+arr = null;
+</code></pre></blockquote>
+<p>上面代码中，<code>arr</code>重置为<code>null</code>，就解除了对[<code>1, 2, 3, 4]</code>的引用，引用次数变成了<code>0</code>，内存就可以释放出来了。</p>
+<p>因此，并不是说有了垃圾回收机制，程序员就轻松了。你还是需要关注内存占用：那些很占空间的值，一旦不再用到，你必须检查是否还存在对它们的引用。如果是的话，就必须手动解除引用。</p>
+<h2 id="三、内存泄漏的识别方法"><a href="#三、内存泄漏的识别方法" class="headerlink" title="三、内存泄漏的识别方法"></a>三、内存泄漏的识别方法</h2><p>怎样可以观察到内存泄漏呢？</p>
+<p><a href="https://www.toptal.com/nodejs/debugging-memory-leaks-node-js-applications" target="_blank" rel="external">经验法则</a>是，如果连续五次垃圾回收之后，内存占用一次比一次大，就有内存泄漏。这就要求实时查看内存占用。</p>
+<h3 id="3-1-浏览器"><a href="#3-1-浏览器" class="headerlink" title="3.1 浏览器"></a>3.1 浏览器</h3><p>Chrome 浏览器查看内存占用，按照以下步骤操作。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017041704.png" alt=""></p>
+<blockquote>
+<ol>
+<li>打开开发者工具，选择 Timeline 面板</li>
+<li>在顶部的<code>Capture</code>字段里面勾选 Memory</li>
+<li>点击左上角的录制按钮。</li>
+<li>在页面上进行各种操作，模拟用户的使用情况。</li>
+<li>一段时间后，点击对话框的 stop 按钮，面板上就会显示这段时间的内存占用情况。</li>
+</ol>
+</blockquote>
+<p>如果内存占用基本平稳，接近水平，就说明不存在内存泄漏。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017041705.png" alt=""></p>
+<p>反之，就是内存泄漏了。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017041706.png" alt=""></p>
+<h3 id="3-2-命令行"><a href="#3-2-命令行" class="headerlink" title="3.2 命令行"></a>3.2 命令行</h3><p>命令行可以使用 Node 提供的<a href="https://nodejs.org/api/process.html#process_process_memoryusage" target="_blank" rel="external"><code>process.memoryUsage</code></a>方法。</p>
+<blockquote>
+<pre><code>console.log(process.memoryUsage());
+// { rss: 27709440,
+//  heapTotal: 5685248,
+//  heapUsed: 3449392,
+//  external: 8772 }
+</code></pre></blockquote>
+<p><code>process.memoryUsage</code>返回一个对象，包含了 Node 进程的内存占用信息。该对象包含四个字段，单位是字节，<a href="http://stackoverflow.com/questions/12023359/what-do-the-return-values-of-node-js-process-memoryusage-stand-for" target="_blank" rel="external">含义</a>如下。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017041702-1.png" alt=""></p>
+<blockquote>
+<ul>
+<li>rss（resident set size）：所有内存占用，包括指令区和堆栈。</li>
+<li>heapTotal：”堆”占用的内存，包括用到的和没用到的。</li>
+<li>heapUsed：用到的堆的部分。</li>
+<li>external： V8 引擎内部的 C++ 对象占用的内存。</li>
+</ul>
+</blockquote>
+<p>判断内存泄漏，以<code>heapUsed</code>字段为准。</p>
+<h2 id="四、WeakMap"><a href="#四、WeakMap" class="headerlink" title="四、WeakMap"></a>四、WeakMap</h2><p>前面说过，及时清除引用非常重要。但是，你不可能记得那么多，有时候一疏忽就忘了，所以才有那么多内存泄漏。</p>
+<p>最好能有一种方法，在新建引用的时候就声明，哪些引用必须手动清除，哪些引用可以忽略不计，当其他引用消失以后，垃圾回收机制就可以释放内存。这样就能大大减轻程序员的负担，你只要清除主要引用就可以了。</p>
+<p>ES6 考虑到了这一点，推出了两种新的数据结构：<a href="http://es6.ruanyifeng.com/#docs/set-map#WeakSet" target="_blank" rel="external">WeakSet</a> 和 <a href="http://es6.ruanyifeng.com/#docs/set-map#WeakMap" target="_blank" rel="external">WeakMap</a>。它们对于值的引用都是不计入垃圾回收机制的，所以名字里面才会有一个”Weak”，表示这是弱引用。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2017/bg2017041707.jpg" alt=""></p>
+<p>下面以 WeakMap 为例，看看它是怎么解决内存泄漏的。</p>
+<blockquote>
+<pre><code>const wm = new WeakMap();
+
+const element = document.getElementById(&apos;example&apos;);
+
+wm.set(element, &apos;some information&apos;);
+wm.get(element) // &quot;some information&quot;
+</code></pre></blockquote>
+<p>上面代码中，先新建一个 Weakmap 实例。然后，将一个 DOM 节点作为键名存入该实例，并将一些附加信息作为键值，一起存放在 WeakMap 里面。这时，WeakMap 里面对<code>element</code>的引用就是弱引用，不会被计入垃圾回收机制。</p>
+<p>也就是说，DOM 节点对象的引用计数是<code>1</code>，而不是<code>2</code>。这时，一旦消除对该节点的引用，它占用的内存就会被垃圾回收机制释放。Weakmap 保存的这个键值对，也会自动消失。</p>
+<p>基本上，如果你要往对象上添加数据，又不想干扰垃圾回收机制，就可以使用 WeakMap。</p>
+<h2 id="五、WeakMap-示例"><a href="#五、WeakMap-示例" class="headerlink" title="五、WeakMap 示例"></a>五、WeakMap 示例</h2><p>WeakMap 的例子很难演示，因为无法观察它里面的引用会自动消失。此时，其他引用都解除了，已经没有引用指向 WeakMap 的键名了，导致无法证实那个键名是不是存在。</p>
+<p>我一直想不出办法，直到有一天贺师俊老师<a href="https://github.com/ruanyf/es6tutorial/issues/362#issuecomment-292109104" target="_blank" rel="external">提示</a>，如果引用所指向的值占用特别多的内存，就可以通过<code>process.memoryUsage</code>方法看出来。</p>
+<p>根据这个思路，网友 vtxf 补充了下面的<a href="https://github.com/ruanyf/es6tutorial/issues/362#issuecomment-292451925" target="_blank" rel="external">例子</a>。</p>
+<p>首先，打开 Node 命令行。</p>
+<blockquote>
+<pre><code>$ node --expose-gc
+</code></pre></blockquote>
+<p>上面代码中，<code>\--expose-gc</code>参数表示允许手动执行垃圾回收机制。</p>
+<p>然后，执行下面的代码。</p>
+<blockquote>
+<pre><code>// 手动执行一次垃圾回收，保证获取的内存使用状态准确
+&gt; global.gc(); 
+undefined
+
+// 查看内存占用的初始状态，heapUsed 为 4M 左右
+&gt; process.memoryUsage(); 
+{ rss: 21106688,
+  heapTotal: 7376896,
+  heapUsed: 4153936,
+  external: 9059 }
+
+&gt; let wm = new WeakMap();
+undefined
+
+&gt; let b = new Object();
+undefined
+
+&gt; global.gc();
+undefined
+
+// 此时，heapUsed 仍然为 4M 左右
+&gt; process.memoryUsage(); 
+{ rss: 20537344,
+  heapTotal: 9474048,
+  heapUsed: 3967272,
+  external: 8993 }
+
+// 在 WeakMap 中添加一个键值对，
+// 键名为对象 b，键值为一个 5*1024*1024 的数组  
+&gt; wm.set(b, new Array(5*1024*1024));
+WeakMap {}
+
+// 手动执行一次垃圾回收
+&gt; global.gc();
+undefined
+
+// 此时，heapUsed 为 45M 左右
+&gt; process.memoryUsage(); 
+{ rss: 62652416,
+  heapTotal: 51437568,
+  heapUsed: 45911664,
+  external: 8951 }
+
+// 解除对象 b 的引用  
+&gt; b = null;
+null
+
+// 再次执行垃圾回收
+&gt; global.gc();
+undefined
+
+// 解除 b 的引用以后，heapUsed 变回 4M 左右
+// 说明 WeakMap 中的那个长度为 5*1024*1024 的数组被销毁了
+&gt; process.memoryUsage(); 
+{ rss: 20639744,
+  heapTotal: 8425472,
+  heapUsed: 3979792,
+  external: 8956 }
+</code></pre></blockquote>
+<p>上面代码中，只要外部的引用消失，WeakMap 内部的引用，就会自动被垃圾回收清除。由此可见，有了它的帮助，解决内存泄漏就会简单很多。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">内存泄漏</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/27/【转载】JavaScript 内存泄漏教程/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-【转载】JavaScript 运行机制详解：再谈Event Loop" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/27/【转载】JavaScript 运行机制详解：再谈Event Loop/">【转载】JavaScript 运行机制详解：再谈Event Loop</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/27/【转载】JavaScript 运行机制详解：再谈Event Loop/" class="archive-article-date">
+  	<time datetime="2017-07-27T09:09:06.934Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://www.ruanyifeng.com/blog/2014/10/event-loop.html" title="Permalink to JavaScript 运行机制详解：再谈Event Loop - 阮一峰的网络日志" target="_blank" rel="external">Source</a></p>
+<h1 id="JavaScript-运行机制详解：再谈Event-Loop"><a href="#JavaScript-运行机制详解：再谈Event-Loop" class="headerlink" title="JavaScript 运行机制详解：再谈Event Loop"></a>JavaScript 运行机制详解：再谈Event Loop</h1><p>一年前，我写了一篇<a href="http://www.ruanyifeng.com/blog/2013/10/event_loop.html" target="_blank" rel="external">《什么是 Event Loop？》</a>，谈了我对Event Loop的理解。</p>
+<p>上个月，我偶然看到了Philip Roberts的演讲<a href="http://vimeo.com/96425312" target="_blank" rel="external">《Help, I’m stuck in an event-loop》</a>。这才尴尬地发现，自己的理解是错的。我决定重写这个题目，详细、完整、正确地描述JavaScript引擎的内部运行机制。下面就是我的重写。</p>
+<p>进入正文之前，插播一条消息。我的新书<a href="http://es6.ruanyifeng.com/" target="_blank" rel="external">《ECMAScript 6入门》</a>出版了（<a href="http://es6.ruanyifeng.com/images/copyright.png" target="_blank" rel="external">版权页</a>，<a href="http://es6.ruanyifeng.com/images/page1.png" target="_blank" rel="external">内页1</a>，<a href="http://es6.ruanyifeng.com/images/page2.png" target="_blank" rel="external">内页2</a>），铜版纸全彩印刷，非常精美，还附有索引（当然价格也比同类书籍略贵一点点）。预览和购买点击<a href="http://es6.ruanyifeng.com/" target="_blank" rel="external">这里</a>。</p>
+<p><img src="http://es6.ruanyifeng.com/images/cover_thumbnail.jpg" alt="cover"></p>
+<p>（<strong>2014年10月13日更新</strong>：本文已经做了较大修改，反映了我现在的认识。关于setTimeout的更多解释和示例，请参阅我正在写的<a href="http://javascript.ruanyifeng.com/bom/timer.html" target="_blank" rel="external">《JavaScript标准参考教程》</a>。）</p>
+<p>（<strong>2014年10月11日更新</strong>：朴灵老师对本文做了<a href="https://app.yinxiang.com/shard/s8/sh/b72fe246-a89d-434b-85f0-a36420849b84/59bad790bdcf6b0a66b8b93d5eacbead" target="_blank" rel="external">评注</a>，详细得指出了文中存在的错误说法，建议阅读。）</p>
+<h2 id="一、为什么JavaScript是单线程？"><a href="#一、为什么JavaScript是单线程？" class="headerlink" title="一、为什么JavaScript是单线程？"></a>一、为什么JavaScript是单线程？</h2><p>JavaScript语言的一大特点就是单线程，也就是说，同一个时间只能做一件事。那么，为什么JavaScript不能有多个线程呢？这样能提高效率啊。</p>
+<p>JavaScript的单线程，与它的用途有关。作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。这决定了它只能是单线程，否则会带来很复杂的同步问题。比如，假定JavaScript同时有两个线程，一个线程在某个DOM节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？</p>
+<p>所以，为了避免复杂性，从一诞生，JavaScript就是单线程，这已经成了这门语言的核心特征，将来也不会改变。</p>
+<p>为了利用多核CPU的计算能力，HTML5提出Web Worker标准，允许JavaScript脚本创建多个线程，但是子线程完全受主线程控制，且不得操作DOM。所以，这个新标准并没有改变JavaScript单线程的本质。</p>
+<h2 id="二、任务队列"><a href="#二、任务队列" class="headerlink" title="二、任务队列"></a>二、任务队列</h2><p>单线程就意味着，所有任务需要排队，前一个任务结束，才会执行后一个任务。如果前一个任务耗时很长，后一个任务就不得不一直等着。</p>
+<p>如果排队是因为计算量大，CPU忙不过来，倒也算了，但是很多时候CPU是闲着的，因为IO设备（输入输出设备）很慢（比如Ajax操作从网络读取数据），不得不等着结果出来，再往下执行。</p>
+<p>JavaScript语言的设计者意识到，这时主线程完全可以不管IO设备，挂起处于等待中的任务，先运行排在后面的任务。等到IO设备返回了结果，再回过头，把挂起的任务继续执行下去。</p>
+<p>于是，所有任务可以分成两种，一种是同步任务（synchronous），另一种是异步任务（asynchronous）。同步任务指的是，在主线程上排队执行的任务，只有前一个任务执行完毕，才能执行后一个任务；异步任务指的是，不进入主线程、而进入”任务队列”（task queue）的任务，只有”任务队列”通知主线程，某个异步任务可以执行了，该任务才会进入主线程执行。</p>
+<p>具体来说，异步执行的运行机制如下。（同步执行也是如此，因为它可以被视为没有异步任务的异步执行。）</p>
+<blockquote>
+<p>（1）所有同步任务都在主线程上执行，形成一个<a href="http://www.ruanyifeng.com/blog/2013/11/stack.html" target="_blank" rel="external">执行栈</a>（execution context stack）。</p>
+<p>（2）主线程之外，还存在一个”任务队列”（task queue）。只要异步任务有了运行结果，就在”任务队列”之中放置一个事件。</p>
+<p>（3）一旦”执行栈”中的所有同步任务执行完毕，系统就会读取”任务队列”，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行。</p>
+<p>（4）主线程不断重复上面的第三步。</p>
+</blockquote>
+<p>下图就是主线程和任务队列的示意图。</p>
+<p><img src="http://image.beekka.com/blog/2014/bg2014100801.jpg" alt="任务队列"></p>
+<p>只要主线程空了，就会去读取”任务队列”，这就是JavaScript的运行机制。这个过程会不断重复。</p>
+<h2 id="三、事件和回调函数"><a href="#三、事件和回调函数" class="headerlink" title="三、事件和回调函数"></a>三、事件和回调函数</h2><p>“任务队列”是一个事件的队列（也可以理解成消息的队列），IO设备完成一项任务，就在”任务队列”中添加一个事件，表示相关的异步任务可以进入”执行栈”了。主线程读取”任务队列”，就是读取里面有哪些事件。</p>
+<p>“任务队列”中的事件，除了IO设备的事件以外，还包括一些用户产生的事件（比如鼠标点击、页面滚动等等）。只要指定过回调函数，这些事件发生时就会进入”任务队列”，等待主线程读取。</p>
+<p>所谓”回调函数”（callback），就是那些会被主线程挂起来的代码。异步任务必须指定回调函数，当主线程开始执行异步任务，就是执行对应的回调函数。</p>
+<p>“任务队列”是一个先进先出的数据结构，排在前面的事件，优先被主线程读取。主线程的读取过程基本上是自动的，只要执行栈一清空，”任务队列”上第一位的事件就自动进入主线程。但是，由于存在后文提到的”定时器”功能，主线程首先要检查一下执行时间，某些事件只有到了规定的时间，才能返回主线程。</p>
+<h2 id="四、Event-Loop"><a href="#四、Event-Loop" class="headerlink" title="四、Event Loop"></a>四、Event Loop</h2><p>主线程从”任务队列”中读取事件，这个过程是循环不断的，所以整个的这种运行机制又称为Event Loop（事件循环）。</p>
+<p>为了更好地理解Event Loop，请看下图（转引自Philip Roberts的演讲<a href="http://vimeo.com/96425312" target="_blank" rel="external">《Help, I’m stuck in an event-loop》</a>）。</p>
+<p><img src="http://image.beekka.com/blog/2014/bg2014100802.png" alt="Event Loop"></p>
+<p>上图中，主线程运行的时候，产生堆（heap）和栈（stack），栈中的代码调用各种外部API，它们在”任务队列”中加入各种事件（click，load，done）。只要栈中的代码执行完毕，主线程就会去读取”任务队列”，依次执行那些事件所对应的回调函数。</p>
+<p>执行栈中的代码（同步任务），总是在读取”任务队列”（异步任务）之前执行。请看下面这个例子。</p>
+<blockquote>
+<pre><code>var req = new XMLHttpRequest();
+req.open(&apos;GET&apos;, url);    
+req.onload = function (){};    
+req.onerror = function (){};    
+req.send();
+</code></pre></blockquote>
+<p>上面代码中的req.send方法是Ajax操作向服务器发送数据，它是一个异步任务，意味着只有当前脚本的所有代码执行完，系统才会去读取”任务队列”。所以，它与下面的写法等价。</p>
+<blockquote>
+<pre><code>var req = new XMLHttpRequest();
+req.open(&apos;GET&apos;, url);
+req.send();
+req.onload = function (){};    
+req.onerror = function (){};   
+</code></pre></blockquote>
+<p>也就是说，指定回调函数的部分（onload和onerror），在send()方法的前面或后面无关紧要，因为它们属于执行栈的一部分，系统总是执行完它们，才会去读取”任务队列”。</p>
+<h2 id="五、定时器"><a href="#五、定时器" class="headerlink" title="五、定时器"></a>五、定时器</h2><p>除了放置异步任务的事件，”任务队列”还可以放置定时事件，即指定某些代码在多少时间之后执行。这叫做”定时器”（timer）功能，也就是定时执行的代码。</p>
+<p>定时器功能主要由setTimeout()和setInterval()这两个函数来完成，它们的内部运行机制完全一样，区别在于前者指定的代码是一次性执行，后者则为反复执行。以下主要讨论setTimeout()。</p>
+<p>setTimeout()接受两个参数，第一个是回调函数，第二个是推迟执行的毫秒数。</p>
+<blockquote>
+<pre><code>console.log(1);
+setTimeout(function(){console.log(2);},1000);
+console.log(3);
+</code></pre></blockquote>
+<p>上面代码的执行结果是1，3，2，因为setTimeout()将第二行推迟到1000毫秒之后执行。</p>
+<p>如果将setTimeout()的第二个参数设为0，就表示当前代码执行完（执行栈清空）以后，立即执行（0毫秒间隔）指定的回调函数。</p>
+<blockquote>
+<pre><code>setTimeout(function(){console.log(1);}, 0);
+console.log(2);
+</code></pre></blockquote>
+<p>上面代码的执行结果总是2，1，因为只有在执行完第二行以后，系统才会去执行”任务队列”中的回调函数。</p>
+<p>总之，setTimeout(fn,0)的含义是，指定某个任务在主线程最早可得的空闲时间执行，也就是说，尽可能早得执行。它在”任务队列”的尾部添加一个事件，因此要等到同步任务和”任务队列”现有的事件都处理完，才会得到执行。</p>
+<p>HTML5标准规定了setTimeout()的第二个参数的最小值（最短间隔），不得低于4毫秒，如果低于这个值，就会自动增加。在此之前，老版本的浏览器都将最短间隔设为10毫秒。另外，对于那些DOM的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每16毫秒执行一次。这时使用requestAnimationFrame()的效果要好于setTimeout()。</p>
+<p>需要注意的是，setTimeout()只是将事件插入了”任务队列”，必须等到当前代码（执行栈）执行完，主线程才会去执行它指定的回调函数。要是当前代码耗时很长，有可能要等很久，所以并没有办法保证，回调函数一定会在setTimeout()指定的时间执行。</p>
+<h2 id="六、Node-js的Event-Loop"><a href="#六、Node-js的Event-Loop" class="headerlink" title="六、Node.js的Event Loop"></a>六、Node.js的Event Loop</h2><p>Node.js也是单线程的Event Loop，但是它的运行机制不同于浏览器环境。</p>
+<p>请看下面的示意图（作者<a href="https://twitter.com/BusyRich/status/494959181871316992" target="_blank" rel="external">@BusyRich</a>）。</p>
+<p><img src="http://image.beekka.com/blog/2014/bg2014100803.png" alt="Node.js"></p>
+<p>根据上图，Node.js的运行机制如下。</p>
+<blockquote>
+<p>（1）V8引擎解析JavaScript脚本。</p>
+<p>（2）解析后的代码，调用Node API。</p>
+<p>（3）<a href="https://github.com/joyent/libuv" target="_blank" rel="external">libuv库</a>负责Node API的执行。它将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。</p>
+<p>（4）V8引擎再将结果返回给用户。</p>
+</blockquote>
+<p>除了setTimeout和setInterval这两个方法，Node.js还提供了另外两个与”任务队列”有关的方法：<a href="http://nodejs.org/docs/latest/api/process.html#process_process_nexttick_callback" target="_blank" rel="external">process.nextTick</a>和<a href="http://nodejs.org/docs/latest/api/timers.html#timers_setimmediate_callback_arg" target="_blank" rel="external">setImmediate</a>。它们可以帮助我们加深对”任务队列”的理解。</p>
+<p>process.nextTick方法可以在当前”执行栈”的尾部—-下一次Event Loop（主线程读取”任务队列”）之前—-触发回调函数。也就是说，它指定的任务总是发生在所有异步任务之前。setImmediate方法则是在当前”任务队列”的尾部添加事件，也就是说，它指定的任务总是在下一次Event Loop时执行，这与setTimeout(fn, 0)很像。请看下面的例子（via <a href="http://stackoverflow.com/questions/17502948/nexttick-vs-setimmediate-visual-explanation" target="_blank" rel="external">StackOverflow</a>）。</p>
+<blockquote>
+<pre><code>process.nextTick(function A() {
+  console.log(1);
+  process.nextTick(function B(){console.log(2);});
+});
+
+setTimeout(function timeout() {
+  console.log(&apos;TIMEOUT FIRED&apos;);
+}, 0)
+// 1
+// 2
+// TIMEOUT FIRED
+</code></pre></blockquote>
+<p>上面代码中，由于process.nextTick方法指定的回调函数，总是在当前”执行栈”的尾部触发，所以不仅函数A比setTimeout指定的回调函数timeout先执行，而且函数B也比timeout先执行。这说明，如果有多个process.nextTick语句（不管它们是否嵌套），将全部在当前”执行栈”执行。</p>
+<p>现在，再看setImmediate。</p>
+<blockquote>
+<pre><code>setImmediate(function A() {
+  console.log(1);
+  setImmediate(function B(){console.log(2);});
+});
+
+setTimeout(function timeout() {
+  console.log(&apos;TIMEOUT FIRED&apos;);
+}, 0);
+</code></pre></blockquote>
+<p>上面代码中，setImmediate与setTimeout(fn,0)各自添加了一个回调函数A和timeout，都是在下一次Event Loop触发。那么，哪个回调函数先执行呢？答案是不确定。运行结果可能是1–TIMEOUT FIRED–2，也可能是TIMEOUT FIRED–1–2。</p>
+<p>令人困惑的是，Node.js文档中称，setImmediate指定的回调函数，总是排在setTimeout前面。实际上，这种情况只发生在递归调用的时候。</p>
+<blockquote>
+<pre><code>setImmediate(function (){
+  setImmediate(function A() {
+    console.log(1);
+    setImmediate(function B(){console.log(2);});
+  });
+
+  setTimeout(function timeout() {
+    console.log(&apos;TIMEOUT FIRED&apos;);
+  }, 0);
+});
+// 1
+// TIMEOUT FIRED
+// 2
+</code></pre></blockquote>
+<p>上面代码中，setImmediate和setTimeout被封装在一个setImmediate里面，它的运行结果总是1–TIMEOUT FIRED–2，这时函数A一定在timeout前面触发。至于2排在TIMEOUT FIRED的后面（即函数B在timeout后面触发），是因为setImmediate总是将事件注册到下一轮Event Loop，所以函数A和timeout是在同一轮Loop执行，而函数B在下一轮Loop执行。</p>
+<p>我们由此得到了process.nextTick和setImmediate的一个重要区别：多个process.nextTick语句总是在当前”执行栈”一次执行完，多个setImmediate可能则需要多次loop才能执行完。事实上，这正是Node.js 10.0版添加setImmediate方法的原因，否则像下面这样的递归调用process.nextTick，将会没完没了，主线程根本不会去读取”事件队列”！</p>
+<blockquote>
+<pre><code>process.nextTick(function foo() {
+  process.nextTick(foo);
+});
+</code></pre></blockquote>
+<p>事实上，现在要是你写出递归的process.nextTick，Node.js会抛出一个警告，要求你改成setImmediate。</p>
+<p>另外，由于process.nextTick指定的回调函数是在本次”事件循环”触发，而setImmediate指定的是在下次”事件循环”触发，所以很显然，前者总是比后者发生得早，而且执行效率也高（因为不用检查”任务队列”）。</p>
+<p>（完）</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">运行机制</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/27/【转载】JavaScript 运行机制详解：再谈Event Loop/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-ES8之异步(async)函数" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/27/ES8之异步(async)函数/">ES8之异步(async)函数</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/27/ES8之异步(async)函数/" class="archive-article-date">
+  	<time datetime="2017-07-27T08:43:37.592Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="异步-async-函数"><a href="#异步-async-函数" class="headerlink" title="异步(async)函数"></a>异步(async)函数</h2><p>异步函数声明： async function foo() {}<br>异步函数表达式： const foo = async function () {};<br>异步方法定义： let obj = { async foo() {} }<br>异步箭头功能： const foo = async () =&gt; {};<br><strong>异步函数总是返回Promises</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">async function asyncFunc() &#123;</div><div class="line">    return 123;</div><div class="line">&#125;</div><div class="line"></div><div class="line">asyncFunc()</div><div class="line">.then(x =&gt; console.log(x));</div><div class="line">    // 123</div><div class="line">-------------------------</div><div class="line">async function asyncFunc() &#123;</div><div class="line">    throw new Error(&apos;Problem!&apos;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">asyncFunc()</div><div class="line">.catch(err =&gt; console.log(err));</div><div class="line">    // Error: Problem!</div></pre></td></tr></table></figure></p>
+<p><strong>Promise 对象的状态变化</strong><br>async函数完全可以看作多个异步操作，包装成的一个 Promise 对象，而await命令就是内部then命令的语法糖。</p>
+<p>async函数返回的 Promise 对象，必须等到内部所有await命令后面的 Promise 对象执行完，才会发生状态改变，除非遇到return语句或者抛出错误。也就是说，只有async函数内部的异步操作执行完，才会执行then方法指定的回调函数。</p>
+<p>下面是一个例子。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">async function getTitle(url) &#123;</div><div class="line">  let response = await fetch(url);</div><div class="line">  let html = await response.text();</div><div class="line">  return html.match(/&lt;title&gt;([\s\S]+)&lt;\/title&gt;/i)[1];</div><div class="line">&#125;</div><div class="line">getTitle(&apos;https://tc39.github.io/ecma262/&apos;).then(console.log)</div><div class="line">// &quot;ECMAScript 2017 Language Specification&quot;</div></pre></td></tr></table></figure></p>
+<p>上面代码中，函数getTitle内部有三个操作：抓取网页、取出文本、匹配页面标题。只有这三个操作全部完成，才会执行then方法里面的console.log。<br><strong>await</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line">处理单个异步结果：</div><div class="line"></div><div class="line">async function asyncFunc() &#123;</div><div class="line">    const result = await otherAsyncFunc();</div><div class="line">    console.log(result);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// Equivalent to:</div><div class="line">function asyncFunc() &#123;</div><div class="line">    return otherAsyncFunc()</div><div class="line">    .then(result =&gt; &#123;</div><div class="line">        console.log(result);</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line">顺序处理多个异步结果：</div><div class="line"></div><div class="line">async function asyncFunc() &#123;</div><div class="line">    const result1 = await otherAsyncFunc1();</div><div class="line">    console.log(result1);</div><div class="line">    const result2 = await otherAsyncFunc2();</div><div class="line">    console.log(result2);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// Equivalent to:</div><div class="line">function asyncFunc() &#123;</div><div class="line">    return otherAsyncFunc1()</div><div class="line">    .then(result1 =&gt; &#123;</div><div class="line">        console.log(result1);</div><div class="line">        return otherAsyncFunc2();</div><div class="line">    &#125;)</div><div class="line">    .then(result2 =&gt; &#123;</div><div class="line">        console.log(result2);</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line">并行处理多个异步结果：</div><div class="line"></div><div class="line">async function asyncFunc() &#123;</div><div class="line">    const [result1, result2] = await Promise.all([</div><div class="line">        otherAsyncFunc1(),</div><div class="line">        otherAsyncFunc2(),</div><div class="line">    ]);</div><div class="line">    console.log(result1, result2);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// Equivalent to:</div><div class="line">function asyncFunc() &#123;</div><div class="line">    return Promise.all([</div><div class="line">        otherAsyncFunc1(),</div><div class="line">        otherAsyncFunc2(),</div><div class="line">    ])</div><div class="line">    .then([result1, result2] =&gt; &#123;</div><div class="line">        console.log(result1, result2);</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line">处理错误：</div><div class="line"></div><div class="line">async function asyncFunc() &#123;</div><div class="line">    try &#123;</div><div class="line">        await otherAsyncFunc();</div><div class="line">    &#125; catch (err) &#123;</div><div class="line">        console.error(err);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// Equivalent to:</div><div class="line">function asyncFunc() &#123;</div><div class="line">    return otherAsyncFunc()</div><div class="line">    .catch(err =&gt; &#123;</div><div class="line">        console.error(err);</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">async function asyncFunc() &#123;</div><div class="line">    console.log(&apos;asyncFunc()&apos;); // (A)</div><div class="line">    return &apos;abc&apos;;</div><div class="line">&#125;</div><div class="line">asyncFunc().</div><div class="line">then(x =&gt; console.log(`Resolved: $&#123;x&#125;`)); // (B)</div><div class="line">console.log(&apos;main&apos;); // (C)</div><div class="line"></div><div class="line">// Output:</div><div class="line">// asyncFunc()</div><div class="line">// main</div><div class="line">// Resolved: abc</div></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES8</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/27/ES8之异步(async)函数/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-ES8之功能参数列表中的尾随逗号" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/27/ES8之功能参数列表中的尾随逗号/">ES8之功能参数列表中的尾随逗号</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/27/ES8之功能参数列表中的尾随逗号/" class="archive-article-date">
+  	<time datetime="2017-07-27T08:42:37.681Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="功能参数列表中的尾随逗号"><a href="#功能参数列表中的尾随逗号" class="headerlink" title="功能参数列表中的尾随逗号"></a>功能参数列表中的尾随逗号</h2><h4 id="函数的尾随逗号"><a href="#函数的尾随逗号" class="headerlink" title="函数的尾随逗号"></a><strong>函数的尾随逗号</strong></h4><p>ES2017 允许函数的最后一个参数有尾逗号（trailing comma）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function clownsEverywhere(</div><div class="line">  param1,</div><div class="line">  param2,</div><div class="line">) &#123; /* ... */ &#125;</div><div class="line"></div><div class="line">clownsEverywhere(</div><div class="line">  &apos;foo&apos;,</div><div class="line">  &apos;bar&apos;,</div><div class="line">);</div></pre></td></tr></table></figure></p>
+<h4 id="对象和数组中的尾随逗号"><a href="#对象和数组中的尾随逗号" class="headerlink" title="对象和数组中的尾随逗号"></a><strong>对象和数组中的尾随逗号</strong></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">//对象中忽略尾随逗号：</div><div class="line"></div><div class="line">let obj = &#123;</div><div class="line">    first: &apos;Jane&apos;,</div><div class="line">    last: &apos;Doe&apos;,</div><div class="line">&#125;;</div><div class="line">//而且它们在Array中也被忽略：</div><div class="line"></div><div class="line">let arr = [</div><div class="line">    &apos;red&apos;,</div><div class="line">    &apos;green&apos;,</div><div class="line">    &apos;blue&apos;,</div><div class="line">];</div><div class="line">console.log(arr.length); // 3</div></pre></td></tr></table></figure>
+<h4 id="为什么这么有用？有两个好处。"><a href="#为什么这么有用？有两个好处。" class="headerlink" title="为什么这么有用？有两个好处。"></a><strong>为什么这么有用？有两个好处。</strong></h4><p>首先，重新排列项目更简单，因为如果最后一个项目更改其位置，则不必添加和删除逗号。</p>
+<p>其次，它帮助版本控制系统跟踪实际发生的变化。例如，从：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[</div><div class="line">    &apos;foo&apos;</div><div class="line">]</div></pre></td></tr></table></figure></p>
+<p>至：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[</div><div class="line">    &apos;foo&apos;,</div><div class="line">    &apos;bar&apos;</div><div class="line">]</div></pre></td></tr></table></figure></p>
+<p>导致线’foo’和线’bar’被标记为改变，即使唯一真正的变化是后一行被添加。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES8</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/27/ES8之功能参数列表中的尾随逗号/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-ES8之字符串填充padStart()，padEnd()" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/27/ES8之字符串填充padStart()，padEnd()/">ES8之字符串填充padStart()，padEnd()</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/27/ES8之字符串填充padStart()，padEnd()/" class="archive-article-date">
+  	<time datetime="2017-07-27T08:41:46.162Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="字符串填充padStart-，padEnd"><a href="#字符串填充padStart-，padEnd" class="headerlink" title="字符串填充padStart()，padEnd()"></a>字符串填充padStart()，padEnd()</h2><p>ES2017 引入了字符串补全长度的功能。如果某个字符串不够指定长度，会在头部或尾部补全。padStart()用于头部补全，padEnd()用于尾部补全。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&apos;x&apos;.padStart(5, &apos;ab&apos;) // &apos;ababx&apos;</div><div class="line">&apos;x&apos;.padStart(4, &apos;ab&apos;) // &apos;abax&apos;</div><div class="line"></div><div class="line">&apos;x&apos;.padEnd(5, &apos;ab&apos;) // &apos;xabab&apos;</div><div class="line">&apos;x&apos;.padEnd(4, &apos;ab&apos;) // &apos;xaba&apos;</div></pre></td></tr></table></figure></p>
+<p>如果原字符串的长度，等于或大于指定的最小长度，则返回原字符串。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&apos;xxx&apos;.padStart(2, &apos;ab&apos;) // &apos;xxx&apos;</div><div class="line">&apos;xxx&apos;.padEnd(2, &apos;ab&apos;) // &apos;xxx&apos;</div></pre></td></tr></table></figure></p>
+<p>如果用来补全的字符串与原字符串，两者的长度之和超过了指定的最小长度，则会截去超出位数的补全字符串。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&apos;abc&apos;.padStart(10, &apos;0123456789&apos;)</div><div class="line">// &apos;0123456abc&apos;</div></pre></td></tr></table></figure></p>
+<p>如果省略第二个参数，默认使用空格补全长度。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&apos;x&apos;.padStart(4) // &apos;   x&apos;</div><div class="line">&apos;x&apos;.padEnd(4) // &apos;x   &apos;</div></pre></td></tr></table></figure></p>
+<p>padStart的常见用途是为数值补全指定位数。下面代码生成10位的数值字符串。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&apos;1&apos;.padStart(10, &apos;0&apos;) // &quot;0000000001&quot;</div><div class="line">&apos;12&apos;.padStart(10, &apos;0&apos;) // &quot;0000000012&quot;</div><div class="line">&apos;123456&apos;.padStart(10, &apos;0&apos;) // &quot;0000123456&quot;</div></pre></td></tr></table></figure></p>
+<p>另一个用途是提示字符串格式。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&apos;12&apos;.padStart(10, &apos;YYYY-MM-DD&apos;) // &quot;YYYY-MM-12&quot;</div><div class="line">&apos;09-12&apos;.padStart(10, &apos;YYYY-MM-DD&apos;) // &quot;YYYY-09-12&quot;</div></pre></td></tr></table></figure></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES8</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/27/ES8之字符串填充padStart()，padEnd()/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-ES8之Object.getOwnPropertyDescriptors()" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/27/ES8之Object.getOwnPropertyDescriptors()/">ES8之Object.getOwnPropertyDescriptors()</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/27/ES8之Object.getOwnPropertyDescriptors()/" class="archive-article-date">
+  	<time datetime="2017-07-27T08:40:38.746Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Object-getOwnPropertyDescriptors"><a href="#Object-getOwnPropertyDescriptors" class="headerlink" title="Object.getOwnPropertyDescriptors()"></a>Object.getOwnPropertyDescriptors()</h2><p>ES2017 引入了Object.getOwnPropertyDescriptors方法，返回指定对象所有自身属性（非继承属性）的描述对象。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">const obj = &#123;</div><div class="line">  foo: 123,</div><div class="line">  get bar() &#123; return &apos;abc&apos; &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">Object.getOwnPropertyDescriptors(obj)</div><div class="line">// &#123; foo:</div><div class="line">//    &#123; value: 123,</div><div class="line">//      writable: true,</div><div class="line">//      enumerable: true,</div><div class="line">//      configurable: true &#125;,</div><div class="line">//   bar:</div><div class="line">//    &#123; get: [Function: bar],</div><div class="line">//      set: undefined,</div><div class="line">//      enumerable: true,</div><div class="line">//      configurable: true &#125; &#125;</div></pre></td></tr></table></figure></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES8</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/27/ES8之Object.getOwnPropertyDescriptors()/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-ES8之Object.entries()" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/27/ES8之Object.entries()/">ES8之Object.entries()</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/27/ES8之Object.entries()/" class="archive-article-date">
+  	<time datetime="2017-07-27T08:39:31.979Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Object-entries"><a href="#Object-entries" class="headerlink" title="Object.entries()"></a>Object.entries()</h2><p>Object.entries方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的<strong>键值对数组</strong>。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var obj = &#123; foo: &apos;bar&apos;, baz: 42 &#125;;</div><div class="line">Object.entries(obj)</div><div class="line">// [ [&quot;foo&quot;, &quot;bar&quot;], [&quot;baz&quot;, 42] ]</div><div class="line"></div><div class="line">Object.entries(&#123; [Symbol()]: 123, foo: &apos;abc&apos; &#125;);</div><div class="line">// [ [ &apos;foo&apos;, &apos;abc&apos; ] ]</div></pre></td></tr></table></figure></p>
+<p>Object.entries的基本用途是遍历对象的属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">let obj = &#123; one: 1, two: 2 &#125;;</div><div class="line">for (let [k, v] of Object.entries(obj)) &#123;</div><div class="line">  console.log(</div><div class="line">    `$&#123;JSON.stringify(k)&#125;: $&#123;JSON.stringify(v)&#125;`</div><div class="line">  );</div><div class="line">&#125;</div><div class="line">// &quot;one&quot;: 1</div><div class="line">// &quot;two&quot;: 2</div></pre></td></tr></table></figure></p>
+<p>Object.entries方法的另一个用处是，将对象转为真正的Map结构。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var obj = &#123; foo: &apos;bar&apos;, baz: 42 &#125;;</div><div class="line">var map = new Map(Object.entries(obj));</div><div class="line">map // Map &#123; foo: &quot;bar&quot;, baz: 42 &#125;</div></pre></td></tr></table></figure></p>
+<p>Object.entries方法的另一个用处是，将对象转为真正的Map结构。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var obj = &#123; foo: &apos;bar&apos;, baz: 42 &#125;;</div><div class="line">var map = new Map(Object.entries(obj));</div><div class="line">map // Map &#123; foo: &quot;bar&quot;, baz: 42 &#125;</div></pre></td></tr></table></figure></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES8</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/27/ES8之Object.entries()/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-ES8之Object.values()" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/27/ES8之Object.values()/">ES8之Object.values()</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/27/ES8之Object.values()/" class="archive-article-date">
+  	<time datetime="2017-07-27T08:38:45.474Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Object-values"><a href="#Object-values" class="headerlink" title="Object.values()"></a>Object.values()</h2><p>Object.values方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的<strong>键值</strong>。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">var obj = &#123; foo: &apos;bar&apos;, baz: 42 &#125;;</div><div class="line">Object.values(obj)</div><div class="line">// [&quot;bar&quot;, 42]</div><div class="line"></div><div class="line">var obj = &#123; 100: &apos;a&apos;, 2: &apos;b&apos;, 7: &apos;c&apos; &#125;;</div><div class="line">Object.values(obj)</div><div class="line">// [&quot;b&quot;, &quot;c&quot;, &quot;a&quot;]</div><div class="line"></div><div class="line">Object.values(&#123; [Symbol()]: 123, foo: &apos;abc&apos; &#125;);</div><div class="line">// [&apos;abc&apos;]</div><div class="line"></div><div class="line">var obj = Object.create(&#123;&#125;, &#123;p: &#123;value: 42&#125;&#125;);</div><div class="line">Object.values(obj) // []</div><div class="line"></div><div class="line">var obj = Object.create(&#123;&#125;, &#123;p:</div><div class="line">  &#123;</div><div class="line">    value: 42,</div><div class="line">    enumerable: true</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line">Object.values(obj) // [42]</div><div class="line"></div><div class="line">Object.values(&apos;foo&apos;)</div><div class="line">// [&apos;f&apos;, &apos;o&apos;, &apos;o&apos;]</div></pre></td></tr></table></figure></p>
+<p>如果参数不是对象，Object.values会先将其转为对象。由于数值和布尔值的包装对象，都不会为实例添加非继承的属性。所以，Object.values会返回空数组。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Object.values(42) // []</div><div class="line">Object.values(true) // []</div></pre></td></tr></table></figure></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES8</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/27/ES8之Object.values()/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-【转载】vue2组件懒加载浅析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -694,553 +1502,9 @@ p.sayName()
 
 
   
-    <article id="post-Vue、Angular、React的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/23/Vue、Angular、React的区别/">Vue、Angular、React的区别</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/23/Vue、Angular、React的区别/" class="archive-article-date">
-  	<time datetime="2017-07-23T09:43:35.011Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Vue-js是什么？"><a href="#Vue-js是什么？" class="headerlink" title="Vue.js是什么？"></a>Vue.js是什么？</h2><p>其实Vue.js不是一个框架，因为它只聚焦视图层，是一个构建数据驱动的Web界面的库。Vue.js通过简单的API提供高效的数据绑定和灵活的组件系统。<br><strong>Vue.js的特性如下：</strong><br>1.轻量级的框架<br>2.双向数据绑定<br>3.指令<br>4.插件化</p>
-<h2 id="Vue-js与其他框架的区别？"><a href="#Vue-js与其他框架的区别？" class="headerlink" title="Vue.js与其他框架的区别？"></a>Vue.js与其他框架的区别？</h2><p><strong>1.与Angular的区别</strong><br>相同点：<br>1.都支持指令：内置指令和自定义指令。<br>2.都支持双向数据绑定。</p>
-<p>不同点：<br>1.AngularJS的学习成本高,而Vue.js本身提供的API都比较简单、直观。<br>2.在性能上，AngularJS依赖对数据做脏检查，所以Watcher越多越慢。Vue.js使用基于依赖追踪的观察并且使用异步队列更新。所有的数据都是独立触发的。对于庞大的应用来说，这个优化差异还是比较明显的。</p>
-<p><strong>2.与React的区别</strong><br>相同点：<br>1.react采用特殊的JSX语法，Vue.js在组件开发中也推崇编写.vue特殊文件格式，对文件内容都有一些约定，两者都需要编译后使用。<br>2.中心思想相同：一切都是组件，组件实例之间可以嵌套。<br>3.都提供合理的钩子函数，可以让开发者定制化地去处理需求。<br>4.都不内置列数AJAX，Route等功能到核心包，而是以插件的方式加载。</p>
-<p>不同点：<br>Vue.js在模板中提供了指令，过滤器等，可以非常方便，快捷地操作DOM。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vue</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Angular</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">React</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/23/Vue、Angular、React的区别/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-MVC、MVP、MVVM架构模式的区别和联系" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/23/MVC、MVP、MVVM架构模式的区别和联系/">MVC、MVP、MVVM架构模式的区别和联系</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/23/MVC、MVP、MVVM架构模式的区别和联系/" class="archive-article-date">
-  	<time datetime="2017-07-23T08:52:45.397Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一、MVC（Model-View-Controller）"><a href="#一、MVC（Model-View-Controller）" class="headerlink" title="一、MVC（Model-View-Controller）"></a>一、MVC（Model-View-Controller）</h2><p>主要是基于分层的目的，让彼此的职责分开。View通过Controller来和Model联系，Controller是View和Model的协调者，View和Model不直接联系，基本联系都是单向的。用户User通过控制器Controller来操作模板Model从而达到视图View的变化。MVC模型关注的是Model的不变，所以，在MVC模型里，Model不依赖于View，但是 View是依赖于Model的。MVC是比较直观的架构模式，用户操作-&gt;View（负责接收用户的输入操作）-&gt;Controller（业务逻辑处理）-&gt;Model（数据持久化）-&gt;View（将结果反馈给View）。<br><img src="http://images2015.cnblogs.com/blog/112316/201606/112316-20160616144231401-1133255130.png" alt="此处输入图片的描述"></p>
-<h2 id="二、MVP（Model-View-Presenter）"><a href="#二、MVP（Model-View-Presenter）" class="headerlink" title="二、MVP（Model-View-Presenter）"></a>二、MVP（Model-View-Presenter）</h2><p>MVP是从MVC模式演变而来的，都是通过Controller/Presenter负责逻辑的处理+Model提供数据+View负责显示。在MVP中，Presenter完全把View和Model进行了分离，主要的程序逻辑在Presenter里实现。并且，Presenter和View是没有直接关联的，是通过定义好的接口进行交互，从而使得在变更View的时候可以保持Presenter不变。<br><img src="http://images2015.cnblogs.com/blog/112316/201606/112316-20160616144243917-1180649863.png" alt="此处输入图片的描述"></p>
-<h2 id="三、MVVM（Model-View-ViewModel）"><a href="#三、MVVM（Model-View-ViewModel）" class="headerlink" title="三、MVVM（Model-View-ViewModel）"></a>三、MVVM（Model-View-ViewModel）</h2><p>MVVM是把MVC里的Controller和MVP里的Presenter改成了ViewModel。MVVM在概念上是真正将页面与数据逻辑分离的模式。View的变化会自动更新到ViewModel,ViewModel的变化也会自动同步到View上显示，因此在View和Model之间没有联系，通过ViewModel进行交互，而且Model和ViewModel之间的交互是双向的，因此视图的数据的变化会同时修改数据源，而数据源数据的变化也会立即反应到View上。这种自动同步是因为ViewModel中的属性实现了Observer，当属性变更时都能触发对应的操作。MVVM模式的框架有：AngularJS+Vue.js<br><img src="http://images2015.cnblogs.com/blog/112316/201606/112316-20160616144255948-1076854192.png" alt="此处输入图片的描述"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">MVC</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">MVP</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">MVVM</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/23/MVC、MVP、MVVM架构模式的区别和联系/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-JS中的this对象详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/21/JS中的this对象详解/">JS中的this对象详解</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/21/JS中的this对象详解/" class="archive-article-date">
-  	<time datetime="2017-07-21T15:45:52.305Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p> JS中this关键字很常见，但是它似乎变幻莫测，让人抓狂。这篇文章就来揭示其中的奥秘。</p>
-<pre><code>借助阮一峰老师的话：它代表函数运行时，自动生成的一个内部对象，只能在函数内部使用。这句话看似平常，可是要非常注意三个字：“运行时”，这说明this关键字只与函数的执行环境有关，而与声明环境没有关系。也就是这个this到底代表的是什么对象要等到函数运行时才知道，有点类似函数定义时的参数列表只在函数调用时才传入真正的对象。理解了这一点对后面this关键字规律的掌握有很大帮助。
-
-this关键字虽然会根据环境变化，但是它始终代表的是调用当前函数的那个对象。这就引出了JS中函数调用的问题。在JS中调用函数的模式可以分为4种： 方法调用模式、函数调用模式、构造器调用模式、apply调用模式。这些模式在如何初始化关键参数this上存在差异。
-</code></pre><p>一、方法调用模式</p>
-<pre><code>当函数被保存为一个对象的属性时，它就可称为这个对象的方法。当一个方法被调用时，this被绑定到这个对象上。如果调用表达式包含一个提取属性的动作（. 或 []），那么它被称为方法调用。例如：
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">var name = &quot;window&quot;;</div><div class="line">var obj = &#123;</div><div class="line">    name: &quot;kxy&quot;,</div><div class="line">    sayName: function() &#123;</div><div class="line">        console.log(this.name);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">obj.sayName();  //kxy</div></pre></td></tr></table></figure>
-<p>sayName函数作为对象obj的方法调用，所以函数体中的this就代表obj对象。</p>
-<p>二、函数调用模式</p>
-<p>当一个函数并非一个对象的属性时，那么它就是被当做函数来调用的。在此种模式下，this被绑定为全局对象，在浏览器环境下就是window对象。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var name = &quot;window&quot;;</div><div class="line">function sayName() &#123;</div><div class="line">    console.log(this.name);</div><div class="line">&#125;</div><div class="line">sayName();</div></pre></td></tr></table></figure></p>
-<pre><code>sayName以函数调用模式调用，所以函数体中的this代表window对象。
-</code></pre><p>三、构造函数模式</p>
-<pre><code>如果在一个函数前面加上new关键字来调用，那么就会创建一个连接到该函数的prototype成员的新对象，同时，this会被绑定到这个新对象上。这种情况下，这个函数就可以成为此对象的构造函数。例如：
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function Obj() &#123;</div><div class="line">    this.name = &quot;kxy&quot;;</div><div class="line">&#125;</div><div class="line">var person = new Obj();</div><div class="line">console.log(person.name);   //kxy</div></pre></td></tr></table></figure>
-<p>Obj作为构造函数被调用，函数体内的this被绑定为新创建的对象person。</p>
-<p>四、apply调用模式</p>
-<pre><code>在JS中，函数也是对象，所有函数对象都有两个方法：apply和call，这两个方法可以让我们构建一个参数数组传递给调用函数，也允许我们改变this的值。例如：
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">var name = &quot;window&quot;;</div><div class="line">var person = &#123;</div><div class="line">    name: &quot;kxy&quot;</div><div class="line">&#125;;</div><div class="line">function sayName() &#123;</div><div class="line">    console.log(this.name);</div><div class="line">&#125;</div><div class="line">sayName();    //window</div><div class="line">sayName.apply(person);   //kxy</div><div class="line">sayName.apply();    //window</div></pre></td></tr></table></figure>
-<pre><code>当以函数调用模式调用sayName时，this代表window；当用apply模式调用sayName，并给它传入的第一个参数为person时，this被绑定到person对象上。如果不给apply传入任何参数，则this代表window。
-
- 自此，函数调用的4种模式就都介绍完了，this的绑定规律也就是以上几种，万变不离其宗。为了简单明了的介绍4种模式，以上的例子都比较简单，那么下面就跟我一起做一个稍复杂的练习，检验下自己是否真正掌握了this绑定对象的方法吧！
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">var name = &quot;window&quot;;</div><div class="line">function showName() &#123;</div><div class="line">    console.log(this.name);</div><div class="line">&#125;</div><div class="line">var person1 = &#123;</div><div class="line">    name: &quot;kxy&quot;,</div><div class="line">    sayName: showName</div><div class="line">&#125;</div><div class="line">var person2 = &#123;</div><div class="line">    name: &quot;Jake&quot;,</div><div class="line">    sayName: function() &#123;</div><div class="line">        var fun = person1.sayName;</div><div class="line">        fun();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">person1.sayName();    //kxy</div><div class="line">person2.sayName();    //window</div></pre></td></tr></table></figure>
-<pre><code>首先心中时刻提醒自己this是在函数执行时被绑定的，不要被任何赋值语句打乱阵脚。
-
-先看第一个执行语句：person1.sayName(); 首先确定这是方法调用模式，对象为person1，再看sayName被赋值为全局函数对象showName，在showName执行时，this绑定的是person1，所以结果为”kxy”。
-
-再看第二个执行语句：person2.sayName(); 这还是方法调用模式，对象为person2，调用的是它的sayName方法。再看sayName函数体，发现函数体最终执行的函数是fun，fun是用函数调用模式调用的。而fun最终也被赋值为showName函数，因为fun是用函数调用模式调用的，所以这里的this绑定为window，结果为”window“。
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/21/JS中的this对象详解/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-open()方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/21/open()方法/">open()方法</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/21/open()方法/" class="archive-article-date">
-  	<time datetime="2017-07-21T15:05:46.657Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>open() 方法可以查找一个已经存在或者新建的浏览器窗口。<br>语法：<br>window.open([URL], [窗口名称], [参数字符串])<br>参数说明:<br>URL：可选参数，在窗口中要显示网页的网址或路径。如果省略这个参数，或者它的值是空字符串，那么窗口就不显示任何文档。<br>窗口名称：可选参数，被打开窗口的名称。<br>    1.该名称由字母、数字和下划线字符组成。<br>    2.”_top”、”_blank”、”_selft”具有特殊意义的名称。<br>       _blank：在新窗口显示目标网页<br>       _self：在当前窗口显示目标网页<br>       _top：框架网页中在上部窗口中显示目标网页<br>    3.相同 name 的窗口只能创建一个，要想创建多个窗口则 name 不能相同。<br>    4.name 不能包含有空格。<br>参数字符串：可选参数，设置窗口参数，各参数用逗号隔开。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/21/open()方法/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-CSS Sprites" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/21/CSS Sprites/">CSS Sprites</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/21/CSS Sprites/" class="archive-article-date">
-  	<time datetime="2017-07-21T14:42:25.149Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>1.简介<br>CSS Sprites在国内很多人叫css精灵，是一种网页图片应用处理方式。它允许将一个页面涉及到的所有零星图片都包含到一张大图中， 利用CSS的“background-image”，“background- repeat”，“background-position”的组合进行背景定位， 访问页面时避免图片载入缓慢的现象。<br>2.优点<br>（1）CSS Sprites能很好地减少网页的http请求，从而大大的提高页面的性能，这是CSS Sprites最大的优点，也是其被广泛传播和应用的主要原因；<br>（2）CSS Sprites能减少图片的字节；<br>（3）CSS Sprites解决了网页设计师在图片命名上的困扰，只需对一张集合的图片命名，不需要对每一个小图片进行命名，从而提高了网页制作效率。<br>（4）CSS Sprites只需要修改一张或少张图片的颜色或样式来改变整个网页的风格。<br>3.缺点<br>（1）图片合并麻烦：图片合并时，需要把多张图片有序的合理的合并成一张图片，并留好足够的空间防止版块出现不必要的背景。<br>（2）图片适应性差：在高分辨的屏幕下自适应页面，若图片不够宽会出现背景断裂。<br>（3）图片定位繁琐：开发时需要通过工具测量计算每个背景单元的精确位置。<br>（4）可维护性差：页面背景需要少许改动，可能要修改部分或整张已合并的图片，进而要改动css。在避免改动图片的前提下，又只能（最好）往下追加图片，但这样增加了图片字节。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CSS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/21/CSS Sprites/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-JavaScript中call和apply的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/21/JavaScript中call和apply的区别/">JavaScript中call和apply的区别</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/21/JavaScript中call和apply的区别/" class="archive-article-date">
-  	<time datetime="2017-07-21T14:37:01.252Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>1.作用<br>在特定的作用域总调用函数，等于设置函数体内this对象的值，以扩充函数赖以运行的作用域。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">window.color=&quot;red&quot;;</div><div class="line">var o=&#123;color:&quot;blue&quot;&#125;;</div><div class="line">function getColor()&#123;</div><div class="line">    console.log(this.color);</div><div class="line">&#125;</div><div class="line">getColor.call(this);</div><div class="line">getColor.call(window);</div><div class="line">getColor.call(o);</div></pre></td></tr></table></figure></p>
-<p>2.区别<br>接收参数的方式不同：<br>对于call（），第一个参数是运行函数的作用域，其余参数都直接传递给函数即传递给函数的参数必须逐个列举出来。<br>对于apply（），第一个参数是 运行函数的作用域 ，另一个参数是参数数组,可以是Array实例或arguments对象。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">function sum(num1,num2)&#123;</div><div class="line">return num1+num2;</div><div class="line">&#125;</div><div class="line">function callSum(num1,num2)&#123;</div><div class="line">return sum.call(this,num1,num2);</div><div class="line">&#125;</div><div class="line">function callSum(num1,num2)&#123;</div><div class="line">return sum.apply(this,arguments);</div><div class="line">&#125;</div><div class="line">function callSum(num1,num2)&#123;</div><div class="line">return sum.apply(this,[num1,num2]);</div><div class="line">&#125;</div><div class="line"></div><div class="line">function add(c, d)&#123; </div><div class="line">return this.a + this.b + c + d; </div><div class="line">&#125; </div><div class="line">var o = &#123;a:1, b:3&#125;; </div><div class="line">add.call(o, 5, 7); // 1 + 3 + 5 + 7 = 16 </div><div class="line">add.apply(o, [10, 20]); // 1 + 3 + 10 + 20 = 34</div></pre></td></tr></table></figure></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/21/JavaScript中call和apply的区别/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-文档类型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/21/文档类型/">文档类型</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/21/文档类型/" class="archive-article-date">
-  	<time datetime="2017-07-21T14:22:04.488Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <pre><code>DTD（文档类型定义）是一组机器可读的规则，他们定义 XML 或 HTML 的特定版本中允许有什么，不允许有什么。在解析网页时，浏览器将使用这些规则检查页面的有效性并且采取相应的措施。浏览器通过分析页面的 DOCTYPE 声明来了解要使用哪个 DTD ，由此知道要使用 HTML 的哪个版本。
-</code></pre><p> DOCTYPE 当前有两种风格，严格（ strict ）和过渡（ transitional ）。过渡 DOCTYPE 的目的是帮助开发人员从老版本迁移到新版本。<br>如果发送具有正确的 MIME 类型的 XHTML 文档，理解 XML 的浏览器将不显示无效的页面。<br>浏览器模式<br>    浏览器有两种呈现模式：标准模式和混杂模式（quirks mode）。在标准模式中，浏览器根据规范呈现页面；在混杂模式中，页面以一种比较宽松的向后兼容的方式显示。<br>DOCTYPE 切换<br>对于 HTML 4.01 文档，<br>包含严格 DTD 的 DOCTYPE 常常导致页面以标准模式呈现。<br>包含过度 DTD 和 URI 的 DOCTYPE 也导致页面以标准模式呈现。<br>但是有过度 DTD 而没有 URI 会导致页面以混杂模式呈现。<br>DOCTYPE 不存在或形式不正确会导致 HTML 和 XHTML 文档以混杂模式呈现。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">HTML</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">DTD</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/21/文档类型/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-ES6之Set和Map数据结构" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/15/ES6之Set和Map数据结构/">ES6之Set和Map数据结构</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/15/ES6之Set和Map数据结构/" class="archive-article-date">
-  	<time datetime="2017-07-15T06:08:48.877Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1-Set"><a href="#1-Set" class="headerlink" title="1.Set"></a>1.Set</h1><h3 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a><strong>基本用法</strong></h3><p>S6 提供了新的数据结构 Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">// 例一</div><div class="line">const set = new Set([1, 2, 3, 4, 4]);</div><div class="line">[...set]</div><div class="line">// [1, 2, 3, 4]</div><div class="line"></div><div class="line">// 例二</div><div class="line">const items = new Set([1, 2, 3, 4, 5, 5, 5, 5]);</div><div class="line">items.size // 5</div><div class="line"></div><div class="line">// 例三</div><div class="line">function divs () &#123;</div><div class="line">  return [...document.querySelectorAll(&apos;div&apos;)];</div><div class="line">&#125;</div><div class="line"></div><div class="line">const set = new Set(divs());</div><div class="line">set.size // 56</div><div class="line"></div><div class="line">// 类似于</div><div class="line">divs().forEach(div =&gt; set.add(div));</div><div class="line">set.size // 56</div></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">// 去除数组的重复成员</div><div class="line">[...new Set(array)]</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">let set = new Set();</div><div class="line">let a = NaN;</div><div class="line">let b = NaN;</div><div class="line">set.add(a);</div><div class="line">set.add(b);</div><div class="line">set // Set &#123;NaN&#125;</div></pre></td></tr></table></figure>
-<p>上面代码向 Set 实例添加了两个NaN，但是只能加入一个。这表明，在 Set 内部，两个NaN是相等。<br>另外，两个对象总是不相等的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">let set = new Set();</div><div class="line"></div><div class="line">set.add(&#123;&#125;);</div><div class="line">set.size // 1</div><div class="line"></div><div class="line">set.add(&#123;&#125;);</div><div class="line">set.size // 2</div></pre></td></tr></table></figure></p>
-<h3 id="Set-实例的属性和方法"><a href="#Set-实例的属性和方法" class="headerlink" title="Set 实例的属性和方法"></a><strong>Set 实例的属性和方法</strong></h3><p>Set 结构的实例有以下属性。</p>
-<p><strong>Set.prototype.constructor</strong>：构造函数，默认就是Set函数。<br><strong>Set.prototype.size</strong>：返回Set实例的成员总数。<br>Set 实例的方法分为两大类：操作方法（用于操作数据）和遍历方法（用于遍历成员）。下面先介绍四个操作方法。</p>
-<p><strong>add(value)</strong>：添加某个值，返回Set结构本身。<br><strong>delete(value)</strong>：删除某个值，返回一个布尔值，表示删除是否成功。<br><strong>has(value)</strong>：返回一个布尔值，表示该值是否为Set的成员。<br><strong>clear()</strong>：清除所有成员，没有返回值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">s.add(1).add(2).add(2);</div><div class="line">// 注意2被加入了两次</div><div class="line"></div><div class="line">s.size // 2</div><div class="line"></div><div class="line">s.has(1) // true</div><div class="line">s.has(2) // true</div><div class="line">s.has(3) // false</div><div class="line"></div><div class="line">s.delete(2);</div><div class="line">s.has(2) // false</div></pre></td></tr></table></figure></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES6</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Set</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Map</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/15/ES6之Set和Map数据结构/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 
@@ -1334,27 +1598,11 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">ES6</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Symbol</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">JavaScript</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">let</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">const</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">CSS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ES6</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1366,7 +1614,27 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">JavaScript</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Symbol</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">let</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">const</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">变量的解构赋值</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ES8</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1379,6 +1647,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">MVVM</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Sass</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1418,7 +1690,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Sass</a>
+                <a href="javascript:void(0)" class="js-tag color3">plugins</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1427,22 +1699,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">图片</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">vue</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">prototype</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">__proto__</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">plugins</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1458,15 +1714,27 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">HTML</a>
+                <a href="javascript:void(0)" class="js-tag color5">内存泄漏</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">DTD</a>
+                <a href="javascript:void(0)" class="js-tag color5">运行机制</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">BFC</a>
+                <a href="javascript:void(0)" class="js-tag color4">vue</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">prototype</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">__proto__</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">flex</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1486,11 +1754,19 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
+                <a href="javascript:void(0)" class="js-tag color5">HTML</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">flex</a>
+                <a href="javascript:void(0)" class="js-tag color4">DTD</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">BFC</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
               </li>
             
             <div class="clearfix"></div>
