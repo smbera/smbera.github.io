@@ -154,6 +154,199 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-HTTP协议中URI和URL的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/28/HTTP协议中URI和URL的区别/">HTTP协议中URI和URL的区别</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/28/HTTP协议中URI和URL的区别/" class="archive-article-date">
+  	<time datetime="2017-07-28T01:28:36.145Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>URI（统一资源标识符）属于URL（统一资源定位符）更高层次的抽象，一种字符串文本标准。就是说，URI属于父类，而URL属于URI的子类。URL是URI的一个子集。二者的区别在于，URI表示请求服务器的路径，定义这么一个资源。而URL同时说明要如何访问这个资源（<a href="http://）。例如，一个URL通常包括三部分：" target="_blank" rel="external">http://）。例如，一个URL通常包括三部分：</a><br>协议部分：http://<br>地址部分：www.baidu.com<br>资源部分：/1.png<br>简单理解是这样的：理解URI和URL的区别，我们引入URN这个概念。这三者的关系如下图：<br><img src="https://pic2.zhimg.com/f66f9f573436858aeeb2ac3da732f5a9_b.png" alt=""><br>也就是说，URI分为三种，URL or URN or （URL and URI）也就是说，URI分为三种，URL or URN or （URL and URI）<br>URL代表资源的路径地址，而URI代表资源的名称。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">HTTP</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/28/HTTP协议中URI和URL的区别/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-【转载】HTTP请求报文解剖" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/28/【转载】HTTP请求报文解剖/">【转载】HTTP请求报文解剖</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/28/【转载】HTTP请求报文解剖/" class="archive-article-date">
+  	<time datetime="2017-07-28T00:51:57.652Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="https://yq.aliyun.com/articles/44672" title="Permalink to HTTP请求报文解剖-博客-云栖社区-阿里云" target="_blank" rel="external">Source</a></p>
+<h1 id="HTTP请求报文解剖"><a href="#HTTP请求报文解剖" class="headerlink" title="HTTP请求报文解剖"></a>HTTP请求报文解剖</h1><p>HTTP请求报文由3部分组成（请求行+请求头+请求体）：</p>
+<p><img src="https://i.imgur.com/oIPQIoF.png" alt="oIPQIoF.png"></p>
+<p>下面是一个实际的请求报文：</p>
+<p><img src="https://i.imgur.com/myBqd6H.jpg" alt="myBqd6H.jpg"></p>
+<p>① 是请求方法，GET和POST是最常见的HTTP方法，除此以外还包括DELETE、HEAD、OPTIONS、PUT、TRACE。不过，当前的大多数浏览器只支持GET和POST，Spring 3.0提供了一个HiddenHttpMethodFilter，允许你通过”_method”的表单参数指定这些特殊的HTTP方法（实际上还是通过POST提交表单）。服务端配置了HiddenHttpMethodFilter后，Spring会根据_method参数指定的值模拟出相应的HTTP方法，这样，就可以使用这些HTTP方法对处理方法进行映射了。</p>
+<p>② 为请求对应的URL地址，它和报文头的Host属性组成完整的请求URL，③是协议名称及版本号。</p>
+<p>④ 是HTTP的报文头，报文头包含若干个属性，格式为”属性名:属性值”，服务端据此获取客户端的信息。</p>
+<p>⑤ 是报文体，它将一个页面表单中的组件值通过param1=value1&amp;m2=value2的键值对形式编码成一个格式化串，它承载多个请求参数的数据。不但报文体可以传递请求参数，请求URL也可以通过类似于”/chapter15/user.html? param1=value1&amp;m2=value2”的方式传递请求参数。</p>
+<p>对照上面的请求报文，我们把它进一步分解，你可以看到一幅更详细的结构图：</p>
+<p><img src="https://i.imgur.com/9D9mqxi.png" alt="9D9mqxi.png"></p>
+<h2 id="HTTP请求报文头属性"><a href="#HTTP请求报文头属性" class="headerlink" title="HTTP请求报文头属性"></a>HTTP请求报文头属性</h2><p>报文头属性是什么东西呢？我们不妨以一个小故事来说明吧。</p>
+<blockquote>
+<p>快到中午了，张三丰不想去食堂吃饭，于是打电话叫外卖：老板，我要一份[鱼香肉丝]，要12：30之前给我送过来哦，我在江湖湖公司研发部，叫张三丰。</p>
+</blockquote>
+<p>这里，你要 [<code>鱼香肉丝]</code> 相当于HTTP报文体，而 <code>&quot;12：30之前送过来&quot;</code>，你叫 <code>&quot;张三丰&quot;</code> 等信息就相当于HTTP的报文头。它们是一些附属信息，帮忙你和饭店老板顺利完成这次交易。</p>
+<p>请求HTTP报文和响应HTTP报文都拥有若干个报文关属性，它们是为协助客户端及服务端交易的一些附属信息。</p>
+<h3 id="常见的HTTP请求报文头属性"><a href="#常见的HTTP请求报文头属性" class="headerlink" title="常见的HTTP请求报文头属性"></a>常见的HTTP请求报文头属性</h3><p><strong>Accept </strong></p>
+<p>请求报文可通过一个 <code>Accept</code> 报文头属性告诉服务端 客户端接受什么类型的响应。</p>
+<p>如下报文头相当于告诉服务端，俺客户端能够接受的响应类型仅为纯文本数据啊，你丫别发其它什么图片啊，视频啊过来，那样我会歇菜的~~~：</p>
+<pre><code>Accept:text/plain
+</code></pre><p>Accept属性的值可以为一个或多个MIME类型的值，关于MIME类型，大家请参考：</p>
+<p>Cookie</p>
+<p>这是第一个要说的，客户端的Cookie就是通过这个报文头属性传给服务端的哦！如下所示：</p>
+<pre><code>Cookie:skin=blue; jsessionid=5F4771183629C9834F8382E23BE13C4C
+</code></pre><p>注意到后台的那个 <code>jsessionid=5F4771183629C9834F8382E23BE13C4C</code> 没有，<br>服务端是怎么知道客户端的多个请求是属于一个Session的，原来就是通过HTTP请求报文头的Cookie属性的jsessionid的值关联起来的！（当然也可以通过重写URL的方式将会话ID附带在每个URL的后后面哦）。</p>
+<p>Referer</p>
+<p>表示这个请求是从哪个URL过来的，假如你通过google搜索出一个商家的广告页面，你对这个广告页面感兴趣，鼠标一点发送一个请求报文到商家的网站，这个请求报文的Referer报文头属性值就是 <a href="http://www.google.com。" target="_blank" rel="external">http://www.google.com。</a></p>
+<p>很多貌似神奇的网页监控软件（如著名的 <a href="http://www.51.la/" target="_blank" rel="external">我要啦</a>），只要在你的网页上放上一段JavaScript，就可以帮你监控流量，全国访问客户的分布情况等报表和图表，其原理就是通过这个Referer及其它一些HTTP报文头工作的。</p>
+<p>Cache-Control</p>
+<p>对缓存进行控制，如一个请求希望响应返回的内容在客户端要被缓存一年，或不希望被缓存就可以通过这个报文头达到目的。</p>
+<p>如以下设置，相当于让服务端将对应请求返回的响应内容不要在客户端缓存（当然响应报文也是通过响应报文头通知浏览器客户端的，这个下面再说）：</p>
+<pre><code>Cache-Control: no-cache
+</code></pre><h2 id="HTTP响应报文解剖"><a href="#HTTP响应报文解剖" class="headerlink" title="HTTP响应报文解剖"></a>HTTP响应报文解剖</h2><h3 id="响应报文结构"><a href="#响应报文结构" class="headerlink" title="响应报文结构"></a>响应报文结构</h3><p>HTTP的响应报文也由三部分组成（响应行+响应头+响应体）：</p>
+<p><img src="https://i.imgur.com/qW0r8iY.png" alt="qW0r8iY.png"></p>
+<p>以下是一个实际的HTTP响应报文：</p>
+<p><img src="https://i.imgur.com/jR36KBb.jpg" alt="jR36KBb.jpg"></p>
+<p>① 报文协议及版本；<br>② 状态码及状态描述；<br>③ 响应报文头，也是由多个属性组成；<br>④ 响应报文体，即我们真正要的”干货”。</p>
+<h3 id="响应状态码"><a href="#响应状态码" class="headerlink" title="响应状态码"></a>响应状态码</h3><p>和请求报文相比，响应报文多了一个”响应状态码”，它以”清晰明确”的语言告诉客户端本次请求的处理结果。</p>
+<p>HTTP的响应状态码由5段组成：</p>
+<ul>
+<li>1xx 消息，一般是告诉客户端，请求已经收到了，正在处理，别急…</li>
+<li>2xx 处理成功，一般表示：请求收悉、我明白你要的、请求已受理、已经处理完成等信息.</li>
+<li>3xx 重定向到其它地方。它让客户端再发起一个请求以完成整个处理。</li>
+<li>4xx 处理发生错误，责任在客户端，如客户端的请求一个不存在的资源，客户端未被授权，禁止访问等。</li>
+<li>5xx 处理发生，责任在服务端，如服务端抛出异常，路由出错，HTTP版本不支持等。</li>
+</ul>
+<p>以下是几个常见的状态码：</p>
+<p>200 OK</p>
+<p>你最希望看到的，即处理成功！</p>
+<p>303 See Other</p>
+<p>我把你redirect到其它的页面，目标的URL通过响应报文头的Location告诉你。</p>
+<blockquote>
+<p>悟空：师傅给个桃吧，走了一天了 :relieved:<br>唐僧：我哪有桃啊！去王母娘娘那找吧 :unamused:</p>
+</blockquote>
+<p>304 Not Modified</p>
+<p>告诉客户端，你请求的这个资源至你上次取得后，并没有更改，你直接用你本地的缓存吧，我很忙哦，你能不能少来烦我啊！</p>
+<p>404 Not Found</p>
+<p>你最不希望看到的，即找不到页面。如你在google上找到一个页面，点击这个链接返回404，表示这个页面已经被网站删除了，google那边的记录只是美好的回忆。</p>
+<p>500 Internal Server Error</p>
+<p>看到这个错误，你就应该查查服务端的日志了，肯定抛出了一堆异常，别睡了，起来改BUG去吧！</p>
+<h3 id="常见的HTTP响应报文头属性"><a href="#常见的HTTP响应报文头属性" class="headerlink" title="常见的HTTP响应报文头属性"></a>常见的HTTP响应报文头属性</h3><p>Cache-Control</p>
+<p>响应输出到客户端后，服务端通过该报文头属告诉客户端如何控制响应内容的缓存。</p>
+<p>下面，的设置让客户端对响应内容缓存3600秒，也即在3600秒内，如果客户再次访问该资源，直接从客户端的缓存中返回内容给客户，不要再从服务端获取（当然，这个功能是靠客户端实现的，服务端只是通过这个属性提示客户端”应该这么做”，做不做，还是决定于客户端，如果是自己宣称支持HTTP的客户端，则就应该这样实现）。</p>
+<pre><code>Cache-Control: max-age=3600
+</code></pre><p>ETag</p>
+<p>一个代表响应服务端资源（如页面）版本的报文头属性，如果某个服务端资源发生变化了，这个ETag就会相应发生变化。它是Cache-Control的有益补充，可以让客户端”更智能”地处理什么时候要从服务端取资源，什么时候可以直接从缓存中返回响应。</p>
+<p>关于ETag的说明，你可以参见：。<br>Spring 3.0还专门为此提供了一个 <code>org.springframework.web.filter.ShallowEtagHeaderFilter</code> （实现原理很简单，对JSP输出的内容MD5，这样内容有变化ETag就相应变化了），用于生成响应的ETag，因为这东东确实可以帮助减少请求和响应的交互。</p>
+<p>下面是一个ETag：</p>
+<pre><code>ETag: &quot;737060cd8c284d8af7ad3082f209582d&quot;
+</code></pre><p>Location</p>
+<p>我们在JSP中让页面Redirect到一个某个A页面中，其实是让客户端再发一个请求到A页面，这个需要Redirect的A页面的URL，其实就是通过响应报文头的Location属性告知客户端的，如下的报文头属性，将使客户端redirect到iteye的首页中：</p>
+<pre><code>Location: https://github.com/biezhi/jb
+</code></pre><p>Set-Cookie</p>
+<p>服务端可以设置客户端的Cookie，其原理就是通过这个响应报文头属性实现的：</p>
+<pre><code>Set-Cookie: UserID=Jack; Max-Age=3600; Version=1
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">HTTP</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/28/【转载】HTTP请求报文解剖/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-HTTP的GET请求参数长度限制问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -968,138 +1161,9 @@ setTimeout(function timeout() {
 
 
   
-    <article id="post-ES8之Object.getOwnPropertyDescriptors()" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/27/ES8之Object.getOwnPropertyDescriptors()/">ES8之Object.getOwnPropertyDescriptors()</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/27/ES8之Object.getOwnPropertyDescriptors()/" class="archive-article-date">
-  	<time datetime="2017-07-27T08:40:38.746Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Object-getOwnPropertyDescriptors"><a href="#Object-getOwnPropertyDescriptors" class="headerlink" title="Object.getOwnPropertyDescriptors()"></a>Object.getOwnPropertyDescriptors()</h2><p>ES2017 引入了Object.getOwnPropertyDescriptors方法，返回指定对象所有自身属性（非继承属性）的描述对象。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">const obj = &#123;</div><div class="line">  foo: 123,</div><div class="line">  get bar() &#123; return &apos;abc&apos; &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">Object.getOwnPropertyDescriptors(obj)</div><div class="line">// &#123; foo:</div><div class="line">//    &#123; value: 123,</div><div class="line">//      writable: true,</div><div class="line">//      enumerable: true,</div><div class="line">//      configurable: true &#125;,</div><div class="line">//   bar:</div><div class="line">//    &#123; get: [Function: bar],</div><div class="line">//      set: undefined,</div><div class="line">//      enumerable: true,</div><div class="line">//      configurable: true &#125; &#125;</div></pre></td></tr></table></figure></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES8</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/27/ES8之Object.getOwnPropertyDescriptors()/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-ES8之Object.entries()" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/27/ES8之Object.entries()/">ES8之Object.entries()</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/27/ES8之Object.entries()/" class="archive-article-date">
-  	<time datetime="2017-07-27T08:39:31.979Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Object-entries"><a href="#Object-entries" class="headerlink" title="Object.entries()"></a>Object.entries()</h2><p>Object.entries方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的<strong>键值对数组</strong>。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var obj = &#123; foo: &apos;bar&apos;, baz: 42 &#125;;</div><div class="line">Object.entries(obj)</div><div class="line">// [ [&quot;foo&quot;, &quot;bar&quot;], [&quot;baz&quot;, 42] ]</div><div class="line"></div><div class="line">Object.entries(&#123; [Symbol()]: 123, foo: &apos;abc&apos; &#125;);</div><div class="line">// [ [ &apos;foo&apos;, &apos;abc&apos; ] ]</div></pre></td></tr></table></figure></p>
-<p>Object.entries的基本用途是遍历对象的属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">let obj = &#123; one: 1, two: 2 &#125;;</div><div class="line">for (let [k, v] of Object.entries(obj)) &#123;</div><div class="line">  console.log(</div><div class="line">    `$&#123;JSON.stringify(k)&#125;: $&#123;JSON.stringify(v)&#125;`</div><div class="line">  );</div><div class="line">&#125;</div><div class="line">// &quot;one&quot;: 1</div><div class="line">// &quot;two&quot;: 2</div></pre></td></tr></table></figure></p>
-<p>Object.entries方法的另一个用处是，将对象转为真正的Map结构。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var obj = &#123; foo: &apos;bar&apos;, baz: 42 &#125;;</div><div class="line">var map = new Map(Object.entries(obj));</div><div class="line">map // Map &#123; foo: &quot;bar&quot;, baz: 42 &#125;</div></pre></td></tr></table></figure></p>
-<p>Object.entries方法的另一个用处是，将对象转为真正的Map结构。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var obj = &#123; foo: &apos;bar&apos;, baz: 42 &#125;;</div><div class="line">var map = new Map(Object.entries(obj));</div><div class="line">map // Map &#123; foo: &quot;bar&quot;, baz: 42 &#125;</div></pre></td></tr></table></figure></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">JavaScript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ES8</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/27/ES8之Object.entries()/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 
@@ -1193,6 +1257,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ES6</a>
               </li>
              
@@ -1209,7 +1277,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CSS</a>
+                <a href="javascript:void(0)" class="js-tag color2">Symbol</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1218,10 +1286,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">const</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Symbol</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1234,6 +1298,14 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ES8</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">HTTP</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">GET</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1265,6 +1337,18 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Angular</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">React</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">WebSocket</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Webpack</a>
               </li>
              
@@ -1277,26 +1361,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">WebSocket</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Angular</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">React</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">HTTP</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">GET</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">plugins</a>
               </li>
              
@@ -1306,14 +1370,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">图片</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">vue</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">运行机制</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1333,6 +1389,14 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">运行机制</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">vue</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">prototype</a>
               </li>
              
@@ -1341,11 +1405,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">HTML</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">DTD</a>
+                <a href="javascript:void(0)" class="js-tag color5">flex</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1365,15 +1425,19 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">HTML</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">DTD</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">BFC</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Mongodb</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">flex</a>
               </li>
             
             <div class="clearfix"></div>
