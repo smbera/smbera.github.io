@@ -6,19 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://smbera.github.io">
-  <title>CSS Sprites | SmBeRa&#39;blog</title>
+  <title>HTTP的GET请求参数长度限制问题 | SmBeRa&#39;blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1.简介CSS Sprites在国内很多人叫css精灵，是一种网页图片应用处理方式。它允许将一个页面涉及到的所有零星图片都包含到一张大图中， 利用CSS的“background-image”，“background- repeat”，“background-position”的组合进行背景定位， 访问页面时避免图片载入缓慢的现象。2.优点（1）CSS Sprites能很好地减少网页的http请求，">
-<meta name="keywords" content="CSS">
+  <meta name="description" content="HTTP的GET请求参数长度限制问题之前学习Get和Post的时候依稀记得有这样一些区别：http的get请求的参数长度是有限制的而post请求的参数长度是无限制的，所以当从客户端向服务端发送数据时，如果数据量太大，那么就不要用get方法，而要用post方法。 但是现在重新发现，在HTTP协议里，并没有对GET请求的参数的长度做出任何的限制，事实上，HTTP协议对URL的长度没有做任何的限制，而是">
+<meta name="keywords" content="HTTP,GET">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CSS Sprites">
-<meta property="og:url" content="https://smbera.github.io/2017/07/21/CSS Sprites/index.html">
+<meta property="og:title" content="HTTP的GET请求参数长度限制问题">
+<meta property="og:url" content="https://smbera.github.io/2017/07/27/HTTP的GET请求参数长度限制问题/index.html">
 <meta property="og:site_name" content="SmBeRa&#39;blog">
-<meta property="og:description" content="1.简介CSS Sprites在国内很多人叫css精灵，是一种网页图片应用处理方式。它允许将一个页面涉及到的所有零星图片都包含到一张大图中， 利用CSS的“background-image”，“background- repeat”，“background-position”的组合进行背景定位， 访问页面时避免图片载入缓慢的现象。2.优点（1）CSS Sprites能很好地减少网页的http请求，">
-<meta property="og:updated_time" content="2017-07-21T14:42:25.470Z">
+<meta property="og:description" content="HTTP的GET请求参数长度限制问题之前学习Get和Post的时候依稀记得有这样一些区别：http的get请求的参数长度是有限制的而post请求的参数长度是无限制的，所以当从客户端向服务端发送数据时，如果数据量太大，那么就不要用get方法，而要用post方法。 但是现在重新发现，在HTTP协议里，并没有对GET请求的参数的长度做出任何的限制，事实上，HTTP协议对URL的长度没有做任何的限制，而是">
+<meta property="og:updated_time" content="2017-07-27T13:11:51.996Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CSS Sprites">
-<meta name="twitter:description" content="1.简介CSS Sprites在国内很多人叫css精灵，是一种网页图片应用处理方式。它允许将一个页面涉及到的所有零星图片都包含到一张大图中， 利用CSS的“background-image”，“background- repeat”，“background-position”的组合进行背景定位， 访问页面时避免图片载入缓慢的现象。2.优点（1）CSS Sprites能很好地减少网页的http请求，">
+<meta name="twitter:title" content="HTTP的GET请求参数长度限制问题">
+<meta name="twitter:description" content="HTTP的GET请求参数长度限制问题之前学习Get和Post的时候依稀记得有这样一些区别：http的get请求的参数长度是有限制的而post请求的参数长度是无限制的，所以当从客户端向服务端发送数据时，如果数据量太大，那么就不要用get方法，而要用post方法。 但是现在重新发现，在HTTP协议里，并没有对GET请求的参数的长度做出任何的限制，事实上，HTTP协议对URL的长度没有做任何的限制，而是">
   
     <link rel="alternative" href="/atom.xml" title="SmBeRa&#39;blog" type="application/atom+xml">
   
@@ -154,27 +154,32 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-CSS Sprites" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-HTTP的GET请求参数长度限制问题" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      CSS Sprites
+      HTTP的GET请求参数长度限制问题
     </h1>
   
 
         
-        <a href="/2017/07/21/CSS Sprites/" class="archive-article-date">
-  	<time datetime="2017-07-21T14:42:25.149Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-21</time>
+        <a href="/2017/07/27/HTTP的GET请求参数长度限制问题/" class="archive-article-date">
+  	<time datetime="2017-07-27T13:11:51.884Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-27</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>1.简介<br>CSS Sprites在国内很多人叫css精灵，是一种网页图片应用处理方式。它允许将一个页面涉及到的所有零星图片都包含到一张大图中， 利用CSS的“background-image”，“background- repeat”，“background-position”的组合进行背景定位， 访问页面时避免图片载入缓慢的现象。<br>2.优点<br>（1）CSS Sprites能很好地减少网页的http请求，从而大大的提高页面的性能，这是CSS Sprites最大的优点，也是其被广泛传播和应用的主要原因；<br>（2）CSS Sprites能减少图片的字节；<br>（3）CSS Sprites解决了网页设计师在图片命名上的困扰，只需对一张集合的图片命名，不需要对每一个小图片进行命名，从而提高了网页制作效率。<br>（4）CSS Sprites只需要修改一张或少张图片的颜色或样式来改变整个网页的风格。<br>3.缺点<br>（1）图片合并麻烦：图片合并时，需要把多张图片有序的合理的合并成一张图片，并留好足够的空间防止版块出现不必要的背景。<br>（2）图片适应性差：在高分辨的屏幕下自适应页面，若图片不够宽会出现背景断裂。<br>（3）图片定位繁琐：开发时需要通过工具测量计算每个背景单元的精确位置。<br>（4）可维护性差：页面背景需要少许改动，可能要修改部分或整张已合并的图片，进而要改动css。在避免改动图片的前提下，又只能（最好）往下追加图片，但这样增加了图片字节。</p>
+        <h2 id="HTTP的GET请求参数长度限制问题"><a href="#HTTP的GET请求参数长度限制问题" class="headerlink" title="HTTP的GET请求参数长度限制问题"></a>HTTP的GET请求参数长度限制问题</h2><p>之前学习Get和Post的时候依稀记得有这样一些区别：http的get请求的参数长度是有限制的而post请求的参数长度是无限制的，所以当从客户端向服务端发送数据时，如果数据量太大，那么就不要用get方法，而要用post方法。</p>
+<p>但是现在重新发现，在HTTP协议里，并没有对GET请求的参数的长度做出任何的限制，事实上，HTTP协议对URL的长度没有做任何的限制，而是服务器和浏览器对URL长度做了限制</p>
+<p><strong>下面我们来看看IE浏览器对get请求支持的长度是多少？</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">var http = require(&apos;http&apos;)  </div><div class="line">var server = http.createServer((req,res)=&gt;&#123;  </div><div class="line">    console.log(req.url.length);  </div><div class="line">&#125;).listen(8080);</div></pre></td></tr></table></figure></p>
+<p>然后输入如下URL:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://localhost:8080/abc?test=testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttestte</div></pre></td></tr></table></figure></p>
+<p>最后打印的url长度是2026，前面的“<a href="http://localhost:8080”" target="_blank" rel="external">http://localhost:8080”</a> 长度是21，<br>所以总长度是2047。</p>
+<p>通过这个小实验，发现1、其实http协议对get方法的请求长度并没有限制，只是浏览器和服务器对它限制了而已，2、IE支持get方法请求的最大长度是2047个字符，也并不是网上说的2048个字符。<strong>总结一下，搞技术需要脚踏实地，不能人云亦云，必须自己实践了，才是最可信的</strong></p>
 
       
 
@@ -219,7 +224,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CSS</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">HTTP</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">GET</a>
         		</li>
       		
 		</ul>
@@ -275,7 +284,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=https://smbera.github.io/2017/07/21/CSS Sprites/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=https://smbera.github.io/2017/07/27/HTTP的GET请求参数长度限制问题/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -289,18 +298,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/07/21/open()方法/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          open()方法
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/07/21/JavaScript中call和apply的区别/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">JavaScript中call和apply的区别</div>
+    <a href="/2017/07/27/ES7之幂运算符/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ES7之幂运算符（**）</div>
       <i class="icon-circle-right"></i>
     </a>
   
